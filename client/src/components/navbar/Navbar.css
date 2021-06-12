@@ -1,0 +1,12 @@
+.navbar-brand:hover {
+  text-decoration: none !important;
+}
+
+.chakra-button:hover {
+  text-decoration: none;
+  background: none;
+}
+
+nav {
+  margin-bottom: 50px;
+}
