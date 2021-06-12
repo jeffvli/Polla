@@ -1,0 +1,37 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Poll {
+  id              Int            @id @default(autoincrement())
+  title           String         @db.VarChar(255)
+  description     String?        @db.VarChar(400)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  isOpen          Boolean        @default(true)
+  multipleAnswers Boolean        @default(false)
+  pollQuestions   PollQuestion[]
+  pollResponses   PollResponse[]
+}
+
+model PollQuestion {
+  id            Int            @id @default(autoincrement())
+  content       String         @db.VarChar(200)
+  poll          Poll           @relation(fields: [pollId], references: [id])
+  pollId        Int
+  pollResponses PollResponse[]
+}
+
+model PollResponse {
+  id             Int          @id @default(autoincrement())
+  ipAddress      String       @db.VarChar(45)
+  poll           Poll         @relation(fields: [pollId], references: [id])
+  pollId         Int
+  pollQuestion   PollQuestion @relation(fields: [pollQuestionId], references: [id])
+  pollQuestionId Int
+}
