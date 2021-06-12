@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import produce from "immer";
 import {
+  Box,
+  Heading,
   AlertDialog,
   AlertDialogOverlay,
   AlertDialogContent,
@@ -14,9 +16,10 @@ import {
   HStack,
   Textarea,
   Checkbox,
+  useToast,
+  useBoolean,
 } from "@chakra-ui/react";
 import { CopyIcon } from "@chakra-ui/icons";
-import { useBoolean } from "@chakra-ui/hooks";
 import { Redirect } from "react-router-dom";
 
 import { api } from "../../api/api";
@@ -34,6 +37,7 @@ const PollForm = () => {
     status: false,
   });
   const onClose = () => setIsOpen(false);
+  const toast = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,9 +63,22 @@ const PollForm = () => {
           questions: questions,
         })
         .then((res) => {
+          toast({
+            title: "Polla created.",
+            description: `Your poll has been created.`,
+            status: "success",
+            duration: 2000,
+          });
           setSuccessResponse({ id: res.data.id, status: true });
         })
-        .catch((e) => console.log(e.message));
+        .catch((e) => {
+          toast({
+            title: "Error creating poll.",
+            description: `${e.message}`,
+            status: "error",
+            duration: 4000,
+          });
+        });
 
       setIsSubmitting(false);
     }
@@ -78,104 +95,121 @@ const PollForm = () => {
   const handleInsertType = () => {
     insertType === "single" ? setInsertType("area") : setInsertType("single");
   };
-
   return (
-    <form onSubmit={handleSubmit}>
-      {successResponse.status && (
-        <Redirect to={`/polls/${successResponse.id}`} />
-      )}
-      <FormControl id="poll-title" isRequired>
-        <FormLabel>Title</FormLabel>
-        <Input
-          size="lg"
-          maxLength={255}
-          placeholder="Enter a title..."
-          onChange={(e) => setTitle(e.currentTarget.value)}
-        />
-      </FormControl>
+    <Box
+      backgroundColor="#2C3039"
+      maxWidth={800}
+      shadow="1px 1px 3px 3px rgba(0,0,0,0.3)"
+      borderRadius="lg"
+      p={5}
+      m="auto"
+    >
+      <Box textAlign="center" pb={10}>
+        <Heading>Create a Polla</Heading>
+      </Box>
+      <Box>
+        <form onSubmit={handleSubmit}>
+          {successResponse.status && (
+            <Redirect to={`/polls/${successResponse.id}`} />
+          )}
+          <FormControl id="poll-title" isRequired>
+            <FormLabel>Title</FormLabel>
+            <Input
+              size="lg"
+              maxLength={255}
+              placeholder="Enter a title..."
+              onChange={(e) => setTitle(e.currentTarget.value)}
+            />
+          </FormControl>
 
-      <FormLabel mt={5}>Description (optional)</FormLabel>
-      <Textarea
-        resize="none"
-        maxLength={400}
-        placeholder="Enter a description..."
-        onChange={(e) => setDescription(e.target.value)}
-      />
+          <FormLabel mt={5}>Description (optional)</FormLabel>
+          <Textarea
+            resize="none"
+            maxLength={400}
+            placeholder="Enter a description..."
+            onChange={(e) => setDescription(e.target.value)}
+          />
 
-      <HStack mt={5}>
-        <FormLabel width="full">Questions</FormLabel>
-        <Button
-          leftIcon={<CopyIcon />}
-          variant="ghost"
-          size="xs"
-          onClick={handleInsertType}
-        >
-          Paste Options
-        </Button>
-      </HStack>
-      {insertType === "single" ? (
-        <Stack spacing={3}>
-          {pollQuestions.map((question, index) => {
-            return (
-              <FormControl
-                key={`poll-question-${index}`}
-                id={`poll-question-${index}`}
-              >
-                <Input
-                  variant="filled"
-                  size="md"
-                  value={question}
-                  onChange={(e) => handleUpdate(index, e.target.value)}
-                  onFocus={() => {
-                    index === pollQuestions.length - 1
-                      ? setPollQuestions(
-                          produce(pollQuestions, (draft) => {
-                            draft.push("");
-                          })
-                        )
-                      : void 0;
-                  }}
-                />
-              </FormControl>
-            );
-          })}
-        </Stack>
-      ) : (
-        <Textarea
-          size="sm"
-          resize="vertical"
-          variant="filled"
-          placeholder="Enter one option per line..."
-          value={pollQuestions.join("\n")}
-          onChange={(e) => setPollQuestions(e.target.value.split("\n"))}
-        />
-      )}
-      <Checkbox mt={5} onChange={setMultipleAnswers.toggle}>
-        Allow multiple answers
-      </Checkbox>
+          <HStack mt={5}>
+            <FormLabel width="full">
+              {insertType === "single"
+                ? "Questions"
+                : "Questions (enter one option per line)"}
+            </FormLabel>
+            <Button
+              leftIcon={<CopyIcon />}
+              variant="ghost"
+              size="xs"
+              onClick={handleInsertType}
+            >
+              Paste Questions
+            </Button>
+          </HStack>
+          {insertType === "single" ? (
+            <Stack spacing={3}>
+              {pollQuestions.map((question, index) => {
+                return (
+                  <FormControl key={`poll-question-${index}`}>
+                    <Input
+                      variant="filled"
+                      size="md"
+                      value={question}
+                      onChange={(e) => handleUpdate(index, e.target.value)}
+                      onFocus={() => {
+                        index === pollQuestions.length - 1
+                          ? setPollQuestions(
+                              produce(pollQuestions, (draft) => {
+                                draft.push("");
+                              })
+                            )
+                          : void 0;
+                      }}
+                    />
+                  </FormControl>
+                );
+              })}
+            </Stack>
+          ) : (
+            <Textarea
+              size="sm"
+              resize="vertical"
+              variant="filled"
+              value={
+                pollQuestions.join("\n").trim() == ""
+                  ? ""
+                  : pollQuestions.join("\n")
+              }
+              onChange={(e) => setPollQuestions(e.target.value.split("\n"))}
+            />
+          )}
+          <Checkbox mt={5} onChange={setMultipleAnswers.toggle}>
+            Allow multiple answers
+          </Checkbox>
 
-      <HStack mt={5}>
-        <Button
-          colorScheme="blue"
-          variant="solid"
-          type="submit"
-          width="full"
-          isLoading={isSubmitting}
-          loadingText="Creating"
-        >
-          Create Poll
-        </Button>
-      </HStack>
-      <AlertDialog isOpen={isOpen} onClose={onClose}>
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogBody textAlign="center" fontSize="xl">
-              <Text>Enter at least two poll questions</Text>
-            </AlertDialogBody>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
-    </form>
+          <HStack mt={5}>
+            <Button
+              colorScheme="blue"
+              variant="solid"
+              type="submit"
+              width="full"
+              isLoading={isSubmitting}
+              loadingText="Creating"
+            >
+              Create Poll
+            </Button>
+          </HStack>
+          <AlertDialog isOpen={isOpen} onClose={onClose}>
+            <AlertDialogOverlay>
+              <AlertDialogContent>
+                <AlertDialogBody textAlign="center" fontSize="xl">
+                  <Text>Enter at least two poll questions</Text>
+                </AlertDialogBody>
+              </AlertDialogContent>
+            </AlertDialogOverlay>
+          </AlertDialog>
+        </form>
+      </Box>
+    </Box>
   );
 };
 

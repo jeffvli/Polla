@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import Navbar from "./navbar/Navbar";
 import Footer from "./footer/Footer";
-import PollCreator from "./poll/PollCreator";
+import PollForm from "./poll/PollForm";
 import Poll from "./poll/Poll";
 import MissingPage from "./missingpage/MissingPage";
 
@@ -17,7 +17,7 @@ function App() {
             <Poll></Poll>
           </Route>
           <Route exact path="/">
-            <PollCreator></PollCreator>
+            <PollForm></PollForm>
           </Route>
           <Route path="*">
             <MissingPage></MissingPage>
