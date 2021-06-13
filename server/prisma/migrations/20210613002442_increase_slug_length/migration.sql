@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Poll" ALTER COLUMN "slug" SET DATA TYPE VARCHAR(10);

@@ -14,7 +14,9 @@ model Poll {
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   isOpen          Boolean        @default(true)
+  isPrivate       Boolean        @default(false)
   multipleAnswers Boolean        @default(false)
+  slug            String         @unique @db.VarChar(10)
   pollQuestions   PollQuestion[]
   pollResponses   PollResponse[]
 }

@@ -2,7 +2,9 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const express = require("express");
 const router = express.Router();
+const randomstring = require("randomstring");
 
+const randomString = require("../../utils/randomString");
 const errorMessage = require("../../utils/errorMessage");
 
 // GET all polls
@@ -12,12 +14,12 @@ router.get("/", async (req, res) => {
 });
 
 // Get a specific poll with questions
-router.get("/:id", async (req, res) => {
-  const { id } = req.params;
+router.get("/:slug", async (req, res) => {
+  const { slug } = req.params;
 
   const poll = await prisma.poll.findUnique({
     where: {
-      id: Number(id),
+      slug: slug,
     },
     include: {
       pollQuestions: true,
@@ -27,19 +29,25 @@ router.get("/:id", async (req, res) => {
   if (!poll) {
     return res
       .status(404)
-      .send(errorMessage(404, `Poll with id ${id} does not exist`));
+      .send(errorMessage(404, `Poll with slug ${slug} does not exist`));
   }
 
   return res.json(poll);
 });
 
 // GET a specific polls' responses
-router.get("/:id/responses", async (req, res) => {
-  const { id } = req.params;
+router.get("/:slug/responses", async (req, res) => {
+  const { slug } = req.params;
+
+  const selectedPoll = await prisma.poll.findUnique({
+    where: {
+      slug: slug,
+    },
+  });
 
   const responses = await prisma.pollResponse.findMany({
     where: {
-      pollId: Number(id),
+      pollId: Number(selectedPoll?.id),
     },
   });
 
@@ -48,7 +56,8 @@ router.get("/:id/responses", async (req, res) => {
 
 // POST a new poll with questions
 router.post("/", async (req, res) => {
-  const { title, description, multipleAnswers, isOpen, questions } = req.body;
+  const { title, description, multipleAnswers, isOpen, isPrivate, questions } =
+    req.body;
 
   const questionData = questions
     ? questions.map((question) => {
@@ -62,6 +71,8 @@ router.post("/", async (req, res) => {
       description,
       multipleAnswers,
       isOpen,
+      isPrivate,
+      slug: await randomString(),
       pollQuestions: {
         create: questionData,
       },
@@ -72,14 +83,20 @@ router.post("/", async (req, res) => {
 });
 
 // POST responses to a specific poll
-router.post("/:id/responses", async (req, res) => {
-  const { id } = req.params;
+router.post("/:slug/responses", async (req, res) => {
+  const { slug } = req.params;
   const ipAddress = req.ipInfo.ip;
 
-  const responseData = req.body.map((responseData) => {
+  const selectedPoll = await prisma.poll.findUnique({
+    where: {
+      slug: slug,
+    },
+  });
+
+  const responseData = await req.body.map((responseData) => {
     return {
       ipAddress: ipAddress,
-      pollId: Number(id),
+      pollId: Number(selectedPoll?.id),
       pollQuestionId: Number(responseData.questionId),
     };
   });

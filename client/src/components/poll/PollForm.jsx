@@ -3,11 +3,6 @@ import produce from "immer";
 import {
   Box,
   Heading,
-  AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogContent,
-  AlertDialogBody,
-  Text,
   Button,
   FormControl,
   FormLabel,
@@ -23,20 +18,20 @@ import { CopyIcon } from "@chakra-ui/icons";
 import { Redirect } from "react-router-dom";
 
 import { api } from "../../api/api";
+import ResponsiveBox from "../generic/responsivebox/ResponsiveBox";
 
 const PollForm = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [pollQuestions, setPollQuestions] = useState(["", "", ""]);
   const [multipleAnswers, setMultipleAnswers] = useBoolean();
-  const [insertType, setInsertType] = useState("single");
+  const [privatePoll, setPrivatePoll] = useBoolean();
+  const [insertType, setInsertType] = useState("multiple");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const [successResponse, setSuccessResponse] = useState({
     id: null,
     status: false,
   });
-  const onClose = () => setIsOpen(false);
   const toast = useToast();
 
   const handleSubmit = async (e) => {
@@ -52,7 +47,12 @@ const PollForm = () => {
     });
 
     if (questions.length < 2) {
-      setIsOpen(true);
+      toast({
+        title: "Invalid poll.",
+        description: `Enter at least 2 questions.`,
+        status: "error",
+        duration: 3000,
+      });
     } else {
       setIsSubmitting(true);
       await api
@@ -60,16 +60,21 @@ const PollForm = () => {
           title: title,
           description: description,
           multipleAnswers: multipleAnswers,
+          isPrivate: privatePoll,
           questions: questions,
         })
         .then((res) => {
           toast({
-            title: "Polla created.",
+            title: "Poll created.",
             description: `Your poll has been created.`,
             status: "success",
             duration: 2000,
           });
-          setSuccessResponse({ id: res.data.id, status: true });
+          setSuccessResponse({
+            id: res.data.id,
+            slug: res.data.slug,
+            status: true,
+          });
         })
         .catch((e) => {
           toast({
@@ -96,28 +101,22 @@ const PollForm = () => {
     insertType === "single" ? setInsertType("area") : setInsertType("single");
   };
   return (
-    <Box
-      backgroundColor="#2C3039"
-      maxWidth={800}
-      shadow="1px 1px 3px 3px rgba(0,0,0,0.3)"
-      borderRadius="lg"
-      p={5}
-      m="auto"
-    >
+    <ResponsiveBox variant="bordered">
       <Box textAlign="center" pb={10}>
-        <Heading>Create a Polla</Heading>
+        <Heading>Create a new Poll</Heading>
       </Box>
       <Box>
         <form onSubmit={handleSubmit}>
           {successResponse.status && (
-            <Redirect to={`/polls/${successResponse.id}`} />
+            <Redirect to={`/polls/${successResponse.slug}`} />
           )}
           <FormControl id="poll-title" isRequired>
-            <FormLabel>Title</FormLabel>
+            <FormLabel>Poll Title</FormLabel>
             <Input
               size="lg"
               maxLength={255}
               placeholder="Enter a title..."
+              autoComplete="off"
               onChange={(e) => setTitle(e.currentTarget.value)}
             />
           </FormControl>
@@ -127,6 +126,7 @@ const PollForm = () => {
             resize="none"
             maxLength={400}
             placeholder="Enter a description..."
+            autoComplete="off"
             onChange={(e) => setDescription(e.target.value)}
           />
 
@@ -142,7 +142,7 @@ const PollForm = () => {
               size="xs"
               onClick={handleInsertType}
             >
-              Paste Questions
+              {insertType === "single" ? "Paste Questions" : "Enter Questions"}
             </Button>
           </HStack>
           {insertType === "single" ? (
@@ -153,6 +153,7 @@ const PollForm = () => {
                     <Input
                       variant="filled"
                       size="md"
+                      autoComplete="off"
                       value={question}
                       onChange={(e) => handleUpdate(index, e.target.value)}
                       onFocus={() => {
@@ -182,34 +183,30 @@ const PollForm = () => {
               onChange={(e) => setPollQuestions(e.target.value.split("\n"))}
             />
           )}
-          <Checkbox mt={5} onChange={setMultipleAnswers.toggle}>
-            Allow multiple answers
-          </Checkbox>
+          <Stack direction="column" mt={5}>
+            <Checkbox onChange={setMultipleAnswers.toggle}>
+              Allow multiple answers
+            </Checkbox>
 
-          <HStack mt={5}>
-            <Button
-              colorScheme="blue"
-              variant="solid"
-              type="submit"
-              width="full"
-              isLoading={isSubmitting}
-              loadingText="Creating"
-            >
-              Create Poll
-            </Button>
-          </HStack>
-          <AlertDialog isOpen={isOpen} onClose={onClose}>
-            <AlertDialogOverlay>
-              <AlertDialogContent>
-                <AlertDialogBody textAlign="center" fontSize="xl">
-                  <Text>Enter at least two poll questions</Text>
-                </AlertDialogBody>
-              </AlertDialogContent>
-            </AlertDialogOverlay>
-          </AlertDialog>
+            <Checkbox onChange={setPrivatePoll.toggle}>
+              Set Private (only accessible by direct link)
+            </Checkbox>
+          </Stack>
+
+          <Button
+            colorScheme="gray"
+            variant="solid"
+            type="submit"
+            width="full"
+            isLoading={isSubmitting}
+            loadingText="Creating"
+            mt={5}
+          >
+            Create Poll
+          </Button>
         </form>
       </Box>
-    </Box>
+    </ResponsiveBox>
   );
 };
 

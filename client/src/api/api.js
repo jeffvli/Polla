@@ -20,27 +20,13 @@ export const usePolls = (refreshInterval) => {
   };
 };
 
-export const usePoll = (refreshInterval = 0) => {
-  const { data, error } = useSWR(`/polls/`, fetcher, {
-    refreshInterval: refreshInterval,
+export const usePoll = (slug) => {
+  const { data, error } = useSWR(`/polls/${slug}`, fetcher, {
     revalidateOnFocus: false,
   });
 
   return {
-    currentStatus: data,
-    isLoading: !error && !data,
-    isError: error,
-  };
-};
-
-export const useUptime = (refreshInterval = 0) => {
-  const { data, error } = useSWR(`/uptime/`, fetcher, {
-    refreshInterval: refreshInterval,
-    revalidateOnFocus: false,
-  });
-
-  return {
-    uptime: data,
+    poll: data,
     isLoading: !error && !data,
     isError: error,
   };
