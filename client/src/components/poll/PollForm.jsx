@@ -142,7 +142,7 @@ const PollForm = () => {
               size="xs"
               onClick={handleInsertType}
             >
-              {insertType === "single" ? "Paste Questions" : "Enter Questions"}
+              {insertType === "single" ? "Paste" : "Enter"}
             </Button>
           </HStack>
           {insertType === "single" ? (
