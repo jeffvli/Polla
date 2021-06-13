@@ -8,13 +8,13 @@ import "./Footer.css";
 
 const Footer = () => {
   return (
-    <footer>
+    <Box as="footer" className="footer">
       <Box height={10} textAlign="right">
         <Link href={process.env.REACT_APP_GITHUB_URL} isExternal>
           <Icon as={FaGithub} w={8} h={8} m={1} />
         </Link>
       </Box>
-    </footer>
+    </Box>
   );
 };
 
