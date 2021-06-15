@@ -2,7 +2,6 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const express = require("express");
 const router = express.Router();
-const randomstring = require("randomstring");
 
 const randomString = require("../../utils/randomString");
 const errorMessage = require("../../utils/errorMessage");

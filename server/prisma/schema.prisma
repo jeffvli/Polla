@@ -37,3 +37,9 @@ model PollResponse {
   pollQuestion   PollQuestion @relation(fields: [pollQuestionId], references: [id])
   pollQuestionId Int
 }
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @unique @db.VarChar(20)
+  password String @db.VarChar
+}
