@@ -53,7 +53,7 @@ passport.use(
   new JWTStrategy(
     {
       jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-      secretOrKey: "jwt_secret",
+      secretOrKey: process.env.JWT_SECRET,
     },
     async (jwt_payload, done) => {
       await prisma.user
