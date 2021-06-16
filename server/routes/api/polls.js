@@ -17,41 +17,49 @@ router.get("/", async (req, res) => {
 router.get("/:slug", async (req, res) => {
   const { slug } = req.params;
 
-  const poll = await prisma.poll.findUnique({
-    where: {
-      slug: slug,
-    },
-    include: {
-      pollQuestions: true,
-    },
-  });
+  try {
+    const poll = await prisma.poll.findUnique({
+      where: {
+        slug: slug,
+      },
+      include: {
+        pollQuestions: true,
+      },
+    });
 
-  if (!poll) {
-    return res
-      .status(404)
-      .send(errorMessage(404, `Poll with slug ${slug} does not exist`));
+    if (!poll) {
+      return res
+        .status(404)
+        .send(errorMessage(404, `Poll with slug ${slug} does not exist`));
+    }
+
+    res.json(poll);
+  } catch (err) {
+    res.status(500).json(errorMessage(500, `${err}`));
   }
-
-  return res.json(poll);
 });
 
 // GET a specific polls' responses
 router.get("/:slug/responses", async (req, res) => {
   const { slug } = req.params;
 
-  const selectedPoll = await prisma.poll.findUnique({
-    where: {
-      slug: slug,
-    },
-  });
+  try {
+    const selectedPoll = await prisma.poll.findUnique({
+      where: {
+        slug: slug,
+      },
+    });
 
-  const responses = await prisma.pollResponse.findMany({
-    where: {
-      pollId: Number(selectedPoll?.id),
-    },
-  });
+    const responses = await prisma.pollResponse.findMany({
+      where: {
+        pollId: Number(selectedPoll?.id),
+      },
+    });
 
-  res.json(responses);
+    res.json(responses);
+  } catch (err) {
+    res.status(500).json(errorMessage(500, `${err}`));
+  }
 });
 
 // POST a new poll with questions
