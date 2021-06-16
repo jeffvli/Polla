@@ -25,9 +25,12 @@ router.post("/register", async (req, res) => {
     res.status(400).send(errorMessage(400, `${error.message}`));
   } else {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findMany({
       where: {
-        username: username,
+        username: {
+          equals: username,
+          mode: "insensitive",
+        },
       },
     });
 
@@ -42,7 +45,7 @@ router.post("/register", async (req, res) => {
           },
         })
         .then((user) => {
-          const token = jwt.sign({ id: user.id }, "jwt_secret");
+          const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
           res.json({ token: token });
         })
         .catch((err) => {
@@ -56,7 +59,7 @@ router.post(
   "/login",
   passport.authenticate("local", { session: false }),
   (req, res) => {
-    const token = jwt.sign({ id: req.user.id }, "jwt_secret");
+    const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET);
     res.json({ token: token });
   }
 );
