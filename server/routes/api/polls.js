@@ -3,6 +3,7 @@ const prisma = new PrismaClient();
 const express = require("express");
 const router = express.Router();
 
+const checkAuthenticated = require("../../middleware/checkAuthenticated");
 const randomString = require("../../utils/randomString");
 const errorMessage = require("../../utils/errorMessage");
 
@@ -54,58 +55,75 @@ router.get("/:slug/responses", async (req, res) => {
 });
 
 // POST a new poll with questions
-router.post("/", async (req, res) => {
-  const { title, description, multipleAnswers, isOpen, isPrivate, questions } =
-    req.body;
+router.post("/", checkAuthenticated, async (req, res) => {
+  const {
+    title,
+    description,
+    multipleAnswers,
+    isOpen,
+    isPrivate,
+    questions,
+    username,
+  } = req.body;
 
-  const questionData = questions
-    ? questions.map((question) => {
-        return { content: question.content || undefined };
-      })
-    : [];
+  try {
+    const questionData = questions
+      ? questions.map((question) => {
+          return { content: question.content || undefined };
+        })
+      : [];
 
-  const newPoll = await prisma.poll.create({
-    data: {
-      title,
-      description,
-      multipleAnswers,
-      isOpen,
-      isPrivate,
-      slug: await randomString(),
-      pollQuestions: {
-        create: questionData,
+    const newPoll = await prisma.poll.create({
+      data: {
+        title,
+        description,
+        multipleAnswers,
+        isOpen,
+        isPrivate,
+        username: req.authenticated ? req.user.username : null,
+        slug: await randomString(),
+        pollQuestions: {
+          create: questionData,
+        },
       },
-    },
-  });
+    });
 
-  res.json(newPoll);
+    res.json(newPoll);
+  } catch (err) {
+    res.status(500).json(errorMessage(500, `${err}`));
+  }
 });
 
 // POST responses to a specific poll
-router.post("/:slug/responses", async (req, res) => {
+router.post("/:slug/responses", checkAuthenticated, async (req, res) => {
   const { slug } = req.params;
   const ipAddress = req.ipInfo.ip;
 
-  const selectedPoll = await prisma.poll.findUnique({
-    where: {
-      slug: slug,
-    },
-  });
+  try {
+    const selectedPoll = await prisma.poll.findUnique({
+      where: {
+        slug: slug,
+      },
+    });
 
-  const responseData = await req.body.map((responseData) => {
-    return {
-      ipAddress: ipAddress,
-      pollId: Number(selectedPoll?.id),
-      pollQuestionId: Number(responseData.questionId),
-    };
-  });
+    const responseData = await req.body.map((responseData) => {
+      return {
+        ipAddress: ipAddress,
+        username: req.authenticated ? req.user.username : null,
+        pollId: Number(selectedPoll?.id),
+        pollQuestionId: Number(responseData.questionId),
+      };
+    });
 
-  await prisma.pollResponse.createMany({
-    data: responseData,
-    skipDuplicates: true,
-  });
+    await prisma.pollResponse.createMany({
+      data: responseData,
+      skipDuplicates: true,
+    });
 
-  res.json(responseData);
+    res.json(responseData);
+  } catch (err) {
+    res.status(500).json(errorMessage(500, `${err}`));
+  }
 });
 
 module.exports = router;
