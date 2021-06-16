@@ -17,6 +17,8 @@ model Poll {
   isPrivate       Boolean        @default(false)
   multipleAnswers Boolean        @default(false)
   slug            String         @unique @db.VarChar(10)
+  user            User?          @relation(fields: [username], references: [username])
+  username        String?        @db.VarChar(20)
   pollQuestions   PollQuestion[]
   pollResponses   PollResponse[]
 }
@@ -36,10 +38,14 @@ model PollResponse {
   pollId         Int
   pollQuestion   PollQuestion @relation(fields: [pollQuestionId], references: [id])
   pollQuestionId Int
+  user           User?        @relation(fields: [userId], references: [id])
+  userId         Int
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  username String @unique @db.VarChar(20)
-  password String @db.VarChar
+  id           Int            @id @default(autoincrement())
+  username     String         @unique @db.VarChar(20)
+  password     String         @db.VarChar
+  polls        Poll[]
+  PollResponse PollResponse[]
 }
