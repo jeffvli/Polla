@@ -36,6 +36,7 @@ app.use(passportConfig.initialize());
 // Routes
 app.use("/api/polls", require("./routes/api/polls"));
 app.use("/api/auth", require("./routes/api/auth"));
+app.use("/api/users", require("./routes/api/users"));
 
 let interval;
 io.on("connection", (socket) => {
