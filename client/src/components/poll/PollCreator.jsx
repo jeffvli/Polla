@@ -17,6 +17,7 @@ import {
 import { CopyIcon } from "@chakra-ui/icons";
 import { Redirect } from "react-router-dom";
 
+import "./Poll.css";
 import { api } from "../../api/api";
 import ResponsiveBox from "../generic/responsivebox/ResponsiveBox";
 
@@ -26,7 +27,7 @@ const PollForm = () => {
   const [pollQuestions, setPollQuestions] = useState(["", "", ""]);
   const [multipleAnswers, setMultipleAnswers] = useBoolean();
   const [privatePoll, setPrivatePoll] = useBoolean();
-  const [insertType, setInsertType] = useState("multiple");
+  const [insertType, setInsertType] = useState("single");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successResponse, setSuccessResponse] = useState({
     id: null,
@@ -34,7 +35,7 @@ const PollForm = () => {
   });
   const toast = useToast();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     let questions = [];
@@ -55,7 +56,7 @@ const PollForm = () => {
       });
     } else {
       setIsSubmitting(true);
-      await api
+      api
         .post("/polls", {
           title: title,
           description: description,
@@ -68,7 +69,7 @@ const PollForm = () => {
             title: "Poll created.",
             description: `Your poll has been created.`,
             status: "success",
-            duration: 2000,
+            duration: 3000,
           });
           setSuccessResponse({
             id: res.data.id,
@@ -189,7 +190,7 @@ const PollForm = () => {
             </Checkbox>
 
             <Checkbox onChange={setPrivatePoll.toggle}>
-              Set Private (only accessible by direct link)
+              Set private (only accessible by direct link)
             </Checkbox>
           </Stack>
 
