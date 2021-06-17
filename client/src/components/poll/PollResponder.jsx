@@ -14,7 +14,7 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 import { formatDistance } from "date-fns";
-import { useParams } from "react-router-dom";
+import { useParams, Redirect } from "react-router-dom";
 
 import { api, usePoll } from "../../api/api";
 import produce from "immer";
@@ -23,6 +23,8 @@ import ResponsiveBox from "../generic/responsivebox/ResponsiveBox";
 const Poll = () => {
   const { pollSlug } = useParams();
   const { poll, isLoading, isError } = usePoll(pollSlug);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setIsSubmitted] = useState(false);
   const [singlePollResponse, setSinglePollResponse] = useState(null);
   const [multiplePollResponse, setMultiplePollResponse] = useState([]);
 
@@ -50,27 +52,35 @@ const Poll = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    setIsSubmitting(true);
     if (poll.multipleAnswers) {
       const pollResponses = multiplePollResponse.map((pollRes) => {
         return { questionId: pollRes.id };
       });
       api
         .post(`/polls/${pollSlug}/responses`, pollResponses)
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err));
+        .then(() => {
+          setIsSubmitting(false);
+          setIsSubmitted(true);
+        })
+        .catch((err) => console.error(err.response.data.error));
     } else {
       console.log(singlePollResponse.id);
       api
         .post(`/polls/${pollSlug}/responses`, {
           questionId: singlePollResponse.id,
         })
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err));
+        .then(() => {
+          setIsSubmitting(false);
+          setIsSubmitted(true);
+        })
+        .catch((err) => console.error(err.response.data.error));
     }
   };
 
   return (
     <>
+      {submitted && <Redirect to={`/polls/${pollSlug}/results`} />}
       {poll && (
         <>
           <ResponsiveBox variant="bordered">
@@ -92,9 +102,9 @@ const Poll = () => {
                             key={question.id}
                             size="lg"
                             spacing={3}
-                            value={question.content}
+                            value={question.question}
                           >
-                            {question.content}
+                            {question.question}
                           </Checkbox>
                         ))}
                       </CheckboxGroup>
@@ -104,13 +114,13 @@ const Poll = () => {
                       <Stack spacing={5}>
                         {poll.pollQuestions.map((question) => (
                           <Radio
-                            value={question.content}
+                            value={question.question}
                             key={question.id}
                             size="lg"
                             spacing={3}
                             onChange={() => setSinglePollResponse(question)}
                           >
-                            {question.content}
+                            {question.question}
                           </Radio>
                         ))}
                       </Stack>
@@ -128,7 +138,7 @@ const Poll = () => {
                     isLoading={false}
                     loadingText="Creating"
                   >
-                    Submit Poll
+                    Submit Response
                   </Button>
                   <Button size="md" colorScheme="gray" variant="outline">
                     View Results

@@ -43,7 +43,7 @@ const PollForm = () => {
       if (q !== "") {
         // Get the first 200 characters of the question in case longer
         // lines are pasted in the textarea
-        questions.push({ content: q.slice(0, 199) });
+        questions.push({ question: q.slice(0, 199) });
       }
     });
 

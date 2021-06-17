@@ -64,20 +64,13 @@ router.get("/:slug/responses", async (req, res) => {
 
 // POST a new poll with questions
 router.post("/", checkAuthenticated, async (req, res) => {
-  const {
-    title,
-    description,
-    multipleAnswers,
-    isOpen,
-    isPrivate,
-    questions,
-    username,
-  } = req.body;
+  const { title, description, multipleAnswers, isOpen, isPrivate, questions } =
+    req.body;
 
   try {
     const questionData = questions
       ? questions.map((question) => {
-          return { content: question.content || undefined };
+          return { question: question.question || undefined };
         })
       : [];
 
@@ -114,12 +107,54 @@ router.post("/:slug/responses", checkAuthenticated, async (req, res) => {
       },
     });
 
-    const responseData = await req.body.map((responseData) => {
+    const existingPollResponses = await prisma.pollResponse.findMany({
+      where: {
+        pollId: Number(selectedPoll?.id),
+      },
+    });
+
+    const duplicateUserOrIp = await existingPollResponses.filter(
+      (responses) => {
+        return (
+          responses.ipAddress === ipAddress ||
+          responses.username === req.user.username
+        );
+      }
+    );
+
+    // Prevent the same user from voting multiple times to a poll
+    // Automatically replace the existing response if another is submitted
+    if (duplicateUserOrIp.length > 0) {
+      if (req.authenticated) {
+        await prisma.pollResponse.deleteMany({
+          where: {
+            username: req.user.username,
+            pollId: Number(selectedPoll?.id),
+          },
+        });
+      }
+
+      await prisma.pollResponse.deleteMany({
+        where: {
+          ipAddress: ipAddress,
+          pollId: Number(selectedPoll?.id),
+        },
+      });
+    }
+
+    // If the request data is not an array, it will fail on the preceeding
+    // map statement to pull the responses. This is to handle both single
+    // and multiple response polls
+    if (!Array.isArray(req.body)) {
+      req.body = [].concat(req.body);
+    }
+
+    const responseData = await req.body.map((data) => {
       return {
         ipAddress: ipAddress,
         username: req.authenticated ? req.user.username : null,
         pollId: Number(selectedPoll?.id),
-        pollQuestionId: Number(responseData.questionId),
+        pollQuestionId: Number(data.questionId),
       };
     });
 
