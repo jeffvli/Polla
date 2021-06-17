@@ -1,5 +1,6 @@
 export const defaultResponsiveWidth = {
   base: "90%",
-  lg: "50%",
-  "2xl": "35%",
+  md: "60%",
+  lg: "35%",
+  xl: "20%",
 };

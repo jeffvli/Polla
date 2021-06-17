@@ -1,0 +1,4 @@
+.chakra-radio__label,
+.chakra-checkbox__label {
+  overflow: auto;
+}
