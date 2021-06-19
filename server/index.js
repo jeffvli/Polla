@@ -1,5 +1,5 @@
 if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config;
+  require("dotenv").config();
 }
 
 const express = require("express");
@@ -10,12 +10,13 @@ const http = require("http");
 const server = http.createServer(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: process.env.APP_BASEURL,
+    origin: process.env.APP_BASE_URL,
     methods: ["GET", "POST"],
   },
 });
 const pollSockets = require("./sockets/polls");
 const passportConfig = require("./passport-config");
+require("./utils/initRedis");
 
 // Set the server and socket.io port
 const PORT = process.env.PORT || 5000;
@@ -26,7 +27,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(
   cors({
-    origin: process.env.APP_BASEURL,
+    origin: process.env.APP_BASE_URL,
     credentials: true,
   })
 );
@@ -38,13 +39,20 @@ app.use("/api/polls", require("./routes/api/polls"));
 app.use("/api/auth", require("./routes/api/auth"));
 app.use("/api/users", require("./routes/api/users"));
 
-let interval;
 io.on("connection", (socket) => {
   console.log("New client connected");
+  let interval;
+
   if (interval) {
     clearInterval(interval);
   }
-  interval = setInterval(() => pollSockets.emitResponses(socket), 1000);
+
+  const pollSlug = socket.handshake.query["pollSlug"];
+  interval = setInterval(
+    () => pollSockets.emitPollResults(socket, pollSlug),
+    1000
+  );
+
   socket.on("disconnect", () => {
     console.log("Client disconnected");
     clearInterval(interval);

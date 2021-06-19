@@ -8,17 +8,17 @@ const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 
 const authenticateUser = async (username, password, done) => {
-  const user = await prisma.user.findUnique({
-    where: {
-      username: username,
-    },
-  });
-
-  if (user == null || user == undefined) {
-    return done(null, false, { message: "No user with that name" });
-  }
-
   try {
+    const user = await prisma.user.findUnique({
+      where: {
+        username: username,
+      },
+    });
+
+    if (user == null || user == undefined) {
+      return done(null, false, { message: "No user with that name" });
+    }
+
     if (await bcrypt.compare(password, user.password)) {
       return done(null, user);
     } else {
@@ -37,6 +37,7 @@ passport.use(
 passport.serializeUser((user, done) => {
   return done(null, user.id);
 });
+
 passport.deserializeUser(async (id, done) => {
   return done(
     null,
@@ -66,7 +67,8 @@ passport.use(
           return done(null, user);
         })
         .catch((err) => {
-          message: "Token not matched";
+          console.log("Token not matched");
+          console.log(err.message);
         });
     }
   )

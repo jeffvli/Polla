@@ -7,12 +7,25 @@ const Joi = require("joi");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
 
+const redisClient = require("../../utils/initRedis");
 const errorMessage = require("../../utils/errorMessage");
 
 const registerSchema = Joi.object({
-  username: Joi.string().min(3).max(20),
+  username: Joi.string().min(3).max(20).regex(/^\S+$/).alphanum(),
   password: Joi.string().min(7).max(64),
 });
+
+function generateToken(id) {
+  return jwt.sign({ id: id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_SECRET_EXPIRATION,
+  });
+}
+
+function generateRefreshToken(id) {
+  return jwt.sign({ id: id }, process.env.JWT_REFRESH_SECRET, {
+    expiresIn: process.env.JWT_REFRESH_SECRET_EXPIRATION,
+  });
+}
 
 router.post("/register", async (req, res) => {
   const { username, password } = req.body;
@@ -34,10 +47,10 @@ router.post("/register", async (req, res) => {
       },
     });
 
-    if (user) {
+    if (user.length > 0) {
       res.status(409).send(errorMessage(409, `User already exists`));
     } else {
-      const newUser = await prisma.user
+      await prisma.user
         .create({
           data: {
             username: username,
@@ -45,7 +58,7 @@ router.post("/register", async (req, res) => {
           },
         })
         .then((user) => {
-          const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+          const token = generateToken(user.id);
           res.json({ token: token });
         })
         .catch((err) => {
@@ -59,10 +72,55 @@ router.post(
   "/login",
   passport.authenticate("local", { session: false }),
   (req, res) => {
-    const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET);
-    res.json({ token: token });
+    const token = generateToken(req.user.id);
+    const refreshToken = generateRefreshToken(req.user.id);
+
+    redisClient.SET(req.user.id, refreshToken, "EX", 2592000, (err, reply) => {
+      if (err) {
+        console.log(err.message);
+        res.sendStatus(500);
+      }
+    });
+
+    res.json({ token: token, refreshToken: refreshToken });
   }
 );
+
+router.delete(
+  "/logout",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    try {
+      redisClient.DEL(req.user.id);
+      res.sendStatus(204);
+    } catch (err) {
+      res.sendStatus(500).json(errorMessage(500, err.message));
+    }
+  }
+);
+
+router.post("/token", (req, res) => {
+  const refreshToken = req.body.refreshToken;
+  if (refreshToken === null) return res.sendStatus(401);
+  //if (!redisClient.GET(userId)) return res.sendStatus(403);
+  jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
+    if (err) return sendStatus(403);
+
+    redisClient.GET(user.id, (err, result) => {
+      if (err) {
+        console.log(err.message);
+        return res.sendStatus(500);
+      }
+
+      if (refreshToken !== result) {
+        return res.sendStatus(403);
+      }
+
+      const token = generateToken(user.id);
+      res.json({ token: token });
+    });
+  });
+});
 
 router.get(
   "/user",
@@ -72,11 +130,13 @@ router.get(
   (req, res) => {
     if (!req.user) {
       res.json({
+        id: null,
         username: "nobody",
       });
     }
 
     res.json({
+      id: req.user.id,
       username: req.user.username,
     });
   }
