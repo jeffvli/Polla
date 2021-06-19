@@ -1,7 +1,7 @@
 const passport = require("passport");
 
 const checkAuthenticated = function (req, res, next) {
-  passport.authenticate("jwt", function (err, user, info) {
+  passport.authenticate("jwt", { session: false }, function (err, user, info) {
     req.authenticated = !!user;
 
     if (user) {

@@ -9,15 +9,16 @@ import MissingPage from "./missingpage/MissingPage";
 import PollShare from "./poll/PollShare";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
+import PollResults from "./poll/PollResults";
 import { useUser } from "../api/api";
 
 function App() {
-  const { user, isLoading, isError } = useUser();
+  const { user, isLoading, isError } = useUser(localStorage.getItem("token"));
 
   return (
     <>
       <Router>
-        {!isLoading && (
+        {user && !isLoading && (
           <>
             <Navbar user={user} />
             <Switch>
@@ -27,12 +28,16 @@ function App() {
               <Route path="/login">
                 <Login user={user} />
               </Route>
-              <Route exact path="/polls/:pollSlug">
+              <Route path="/polls/:pollSlug/results">
+                <PollResults />
+                <PollShare mt="2rem" mb="5rem" />
+              </Route>
+              <Route path="/polls/:pollSlug">
                 <PollResponder />
                 <PollShare mt="2rem" mb="5rem" />
               </Route>
               <Route exact path="/">
-                <PollCreator user={user} />
+                <PollCreator user={user} mb="5rem" />
               </Route>
               <Route path="*">
                 <MissingPage />

@@ -2,6 +2,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { Flex, Spacer, Box, Text, Stack, Button, Link } from "@chakra-ui/react";
 
 import "./Navbar.css";
+import { api } from "../../api/api";
 
 const Navbar = ({ user }) => {
   return (
@@ -23,14 +24,15 @@ const Navbar = ({ user }) => {
             {user.isAuthenticated && user !== undefined ? (
               <>
                 <Button
-                  as={RouterLink}
-                  to="/"
                   size="sm"
                   m="auto"
-                  colorScheme="gray"
+                  variant="ghost"
                   onClick={() => {
-                    localStorage.removeItem("token");
-                    window.location.reload();
+                    api.delete("/auth/logout").then(() => {
+                      localStorage.removeItem("token");
+                      localStorage.removeItem("refreshToken");
+                      window.location.reload();
+                    });
                   }}
                 >
                   Log out
@@ -52,7 +54,10 @@ const Navbar = ({ user }) => {
                   to="/register"
                   size="sm"
                   m="auto"
-                  colorScheme="gray"
+                  bg={"blue.400"}
+                  _hover={{
+                    bg: "blue.500",
+                  }}
                 >
                   Register
                 </Button>

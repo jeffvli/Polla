@@ -2,13 +2,16 @@ import axios from "axios";
 import useSWR from "swr";
 import createAuthRefreshInterceptor from "axios-auth-refresh";
 
-const refreshAuthLogic = async () => {
+const refreshAuthLogic = async (failedRequest) => {
   await axios
     .post(`${process.env.REACT_APP_API_URL}/auth/token`, {
       refreshToken: localStorage.getItem("refreshToken"),
     })
     .then((tokenRefreshResponse) => {
       localStorage.setItem("token", tokenRefreshResponse.data.token);
+      failedRequest.response.config.headers["Authorization"] =
+        "Bearer " + tokenRefreshResponse.data.token;
+      return Promise.resolve();
     })
     .catch((err) => {
       console.log(err);
@@ -17,16 +20,11 @@ const refreshAuthLogic = async () => {
 
 export const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
-  headers: {
-    Authorization: "Bearer " + localStorage.getItem("token"),
-  },
-});
-
-export const authApi = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
-  headers: {
-    Authorization: "Bearer " + localStorage.getItem("token"),
-  },
+  headers: localStorage.getItem("token")
+    ? {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      }
+    : null,
 });
 
 createAuthRefreshInterceptor(api, refreshAuthLogic);
@@ -41,9 +39,8 @@ export const authFetcher = (url, token) =>
     })
     .then((res) => res.data);
 
-export const usePolls = (refreshInterval) => {
-  const { data, error } = useSWR(`/polls/`, fetcher, {
-    refreshInterval: refreshInterval,
+export const usePolls = () => {
+  const { data, error } = useSWR("/polls/", fetcher, {
     revalidateOnFocus: false,
   });
 
@@ -67,7 +64,7 @@ export const usePoll = (slug) => {
 };
 
 export const useUser = (token) => {
-  const { data, error } = useSWR([`/auth/user`, token], authFetcher, {
+  const { data, error } = useSWR(["/auth/user", token], authFetcher, {
     revalidateOnFocus: false,
   });
 

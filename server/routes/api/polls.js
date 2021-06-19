@@ -67,6 +67,10 @@ router.post("/", checkAuthenticated, async (req, res) => {
   const { title, description, multipleAnswers, isOpen, isPrivate, questions } =
     req.body;
 
+  if (!req.authenticated && req.headers.authorization) {
+    return res.sendStatus(401);
+  }
+
   try {
     const questionData = questions
       ? questions.map((question) => {
@@ -99,6 +103,10 @@ router.post("/", checkAuthenticated, async (req, res) => {
 router.post("/:slug/responses", checkAuthenticated, async (req, res) => {
   const { slug } = req.params;
   const ipAddress = req.ipInfo.ip;
+
+  if (!req.authenticated && req.headers.authorization) {
+    return res.sendStatus(401);
+  }
 
   try {
     const selectedPoll = await prisma.poll.findUnique({
