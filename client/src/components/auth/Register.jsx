@@ -16,8 +16,8 @@ import {
   Link,
   useToast,
 } from "@chakra-ui/react";
+import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import { Link as RouterLink, Redirect } from "react-router-dom";
-import { MdCheckCircle } from "react-icons/md";
 import { nanoid } from "nanoid";
 import produce from "immer";
 
@@ -227,7 +227,7 @@ const Register = () => {
               {usernameRequirements.map((requirement) => (
                 <ListItem key={nanoid()} fontSize=".9em">
                   <ListIcon
-                    as={MdCheckCircle}
+                    as={requirement.pass ? CheckIcon : CloseIcon}
                     color={requirement.pass ? "green.500" : "red.500"}
                   ></ListIcon>
                   {requirement.text}
@@ -270,7 +270,7 @@ const Register = () => {
               {passwordRequirements.map((requirement) => (
                 <ListItem key={nanoid()} fontSize=".9em">
                   <ListIcon
-                    as={MdCheckCircle}
+                    as={requirement.pass ? CheckIcon : CloseIcon}
                     color={requirement.pass ? "green.500" : "red.500"}
                   ></ListIcon>
                   {requirement.text}
