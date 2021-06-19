@@ -12,21 +12,24 @@ import {
   Divider,
   CheckboxGroup,
   Checkbox,
+  Center,
 } from "@chakra-ui/react";
 import { formatDistance } from "date-fns";
-import { useParams, Redirect } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 
+import PollBox from "./PollBox";
 import { api, usePoll } from "../../api/api";
 import produce from "immer";
 import ResponsiveBox from "../generic/responsivebox/ResponsiveBox";
+import { nanoid } from "nanoid";
 
-const Poll = () => {
+const PollResponder = () => {
   const { pollSlug } = useParams();
   const { poll, isLoading, isError } = usePoll(pollSlug);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setIsSubmitted] = useState(false);
-  const [singlePollResponse, setSinglePollResponse] = useState(null);
+  const [singlePollResponse, setSinglePollResponse] = useState("");
   const [multiplePollResponse, setMultiplePollResponse] = useState([]);
+  const history = useHistory();
 
   const handleMultipleResponse = (e) => {
     const checkDup = multiplePollResponse.filter((pollRes) => {
@@ -61,7 +64,7 @@ const Poll = () => {
         .post(`/polls/${pollSlug}/responses`, pollResponses)
         .then(() => {
           setIsSubmitting(false);
-          setIsSubmitted(true);
+          history.push(`/polls/${pollSlug}/results`);
         })
         .catch((err) => console.error(err.response.data.error));
     } else {
@@ -72,7 +75,7 @@ const Poll = () => {
         })
         .then(() => {
           setIsSubmitting(false);
-          setIsSubmitted(true);
+          history.push(`/polls/${pollSlug}/results`);
         })
         .catch((err) => console.error(err.response.data.error));
     }
@@ -80,13 +83,9 @@ const Poll = () => {
 
   return (
     <>
-      {submitted && <Redirect to={`/polls/${pollSlug}/results`} />}
       {poll && (
         <>
-          <ResponsiveBox variant="bordered">
-            <Box textAlign="center" pb={10}>
-              <Heading>{poll.title}</Heading>
-            </Box>
+          <PollBox poll={poll}>
             <Box>
               <form onSubmit={handleSubmit}>
                 <FormControl isRequired>
@@ -115,7 +114,6 @@ const Poll = () => {
                         {poll.pollQuestions.map((question) => (
                           <Radio
                             value={question.question}
-                            key={question.id}
                             size="lg"
                             spacing={3}
                             onChange={() => setSinglePollResponse(question)}
@@ -146,20 +144,11 @@ const Poll = () => {
                 </Stack>
               </form>
             </Box>
-            <Divider mt={5} mb={5}></Divider>
-            <Box mt={5} color={"gray.600"}>
-              <Text>
-                Created by - {poll.username ? poll.username : "anonymous"} -{" "}
-                {formatDistance(new Date(poll.createdAt), new Date(), {
-                  addSuffix: true,
-                })}
-              </Text>
-            </Box>
-          </ResponsiveBox>
+          </PollBox>
         </>
       )}
     </>
   );
 };
 
-export default Poll;
+export default PollResponder;

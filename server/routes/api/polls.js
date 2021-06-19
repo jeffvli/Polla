@@ -2,6 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const express = require("express");
 const router = express.Router();
+const _ = require("lodash");
 
 const checkAuthenticated = require("../../middleware/checkAuthenticated");
 const randomString = require("../../utils/randomString");
@@ -73,10 +74,18 @@ router.post("/", checkAuthenticated, async (req, res) => {
 
   try {
     const questionData = questions
-      ? questions.map((question) => {
+      ? _.uniqBy(questions, "question").map((question) => {
           return { question: question.question || undefined };
         })
       : [];
+
+    if (questionData.length < 2) {
+      return res
+        .status(422)
+        .json(
+          errorMessage(422, "A poll requires at least two unique questions.")
+        );
+    }
 
     const newPoll = await prisma.poll.create({
       data: {

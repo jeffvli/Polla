@@ -21,7 +21,7 @@ import "./Poll.css";
 import { api } from "../../api/api";
 import ResponsiveBox from "../generic/responsivebox/ResponsiveBox";
 
-const PollForm = () => {
+const PollCreator = ({ mb }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [pollQuestions, setPollQuestions] = useState(["", "", ""]);
@@ -50,7 +50,7 @@ const PollForm = () => {
     if (questions.length < 2) {
       toast({
         title: "Invalid poll.",
-        description: `Enter at least 2 questions.`,
+        description: "Enter at least two questions.",
         status: "error",
         duration: 3000,
       });
@@ -67,9 +67,9 @@ const PollForm = () => {
         .then((res) => {
           toast({
             title: "Poll created.",
-            description: `Your poll has been created.`,
+            description: "Your poll has been created.",
             status: "success",
-            duration: 3000,
+            duration: 2000,
           });
           setSuccessResponse({
             id: res.data.id,
@@ -77,12 +77,12 @@ const PollForm = () => {
             status: true,
           });
         })
-        .catch((e) => {
+        .catch((err) => {
           toast({
             title: "Error creating poll.",
-            description: `${e.message}`,
+            description: `${err.response.data.error.message}`,
             status: "error",
-            duration: 4000,
+            duration: 3000,
           });
         });
 
@@ -102,7 +102,7 @@ const PollForm = () => {
     insertType === "single" ? setInsertType("area") : setInsertType("single");
   };
   return (
-    <ResponsiveBox variant="bordered">
+    <ResponsiveBox variant="bordered" mb={mb}>
       <Box textAlign="center" pb={10}>
         <Heading>Create a new Poll</Heading>
       </Box>
@@ -211,4 +211,4 @@ const PollForm = () => {
   );
 };
 
-export default PollForm;
+export default PollCreator;
