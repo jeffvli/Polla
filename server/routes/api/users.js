@@ -11,7 +11,10 @@ router.get("/", async (req, res) => {
   try {
     const users = await prisma.user.findMany({
       where: {
-        username: username,
+        username: {
+          equals: username,
+          mode: "insensitive",
+        },
       },
       select: {
         username: true,
