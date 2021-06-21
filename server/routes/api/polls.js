@@ -132,18 +132,11 @@ router.post("/:slug/responses", checkAuthenticated, async (req, res) => {
     return res.sendStatus(401);
   }
 
-  if (req.body > 1) {
-    const multi = true;
-    if ((multi && !req.body[0].sessionId) || (!multi && !req.body.sessionId)) {
-      return res
-        .status(422)
-        .json(
-          errorMessage(
-            422,
-            "Invalid session Id, please refresh your page and try again."
-          )
-        );
-    }
+  if (
+    (req.body.length > 1 && !req.body[0].sessionId) ||
+    (req.body.length === undefined && !req.body.sessionId)
+  ) {
+    return res.status(422).json(errorMessage(422, "Missing sessionId value."));
   }
 
   try {
