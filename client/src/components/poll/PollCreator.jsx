@@ -13,6 +13,8 @@ import {
   Checkbox,
   useToast,
   useBoolean,
+  RadioGroup,
+  Radio,
 } from "@chakra-ui/react";
 import { CopyIcon } from "@chakra-ui/icons";
 import { Redirect } from "react-router-dom";
@@ -31,6 +33,11 @@ const PollCreator = ({ mb }) => {
   const [privatePoll, setPrivatePoll] = useBoolean(
     localStorage.getItem("privatePoll") === "true" ? true : false
   );
+  const [duplicateCheck, setDuplicateCheck] = useState((e) => {
+    return localStorage.getItem("duplicateCheck") === "session"
+      ? "session"
+      : "ipAddress";
+  });
   const [insertType, setInsertType] = useState("single");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successResponse, setSuccessResponse] = useState({
@@ -38,6 +45,11 @@ const PollCreator = ({ mb }) => {
     status: false,
   });
   const toast = useToast();
+
+  const handleDuplicateCheck = (e) => {
+    localStorage.setItem("duplicateCheck", e);
+    setDuplicateCheck(e);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -68,6 +80,7 @@ const PollCreator = ({ mb }) => {
           isPrivate: privatePoll,
           questions: questions,
           sessionId: sessionStorage.getItem("sessionId"),
+          dupCheckMode: duplicateCheck,
         })
         .then((res) => {
           toast({
@@ -81,6 +94,7 @@ const PollCreator = ({ mb }) => {
             slug: res.data.slug,
             status: true,
           });
+          setIsSubmitting(false);
         })
         .catch((err) => {
           toast({
@@ -89,9 +103,8 @@ const PollCreator = ({ mb }) => {
             status: "error",
             duration: 3000,
           });
+          setIsSubmitting(false);
         });
-
-      setIsSubmitting(false);
     }
   };
 
@@ -190,6 +203,7 @@ const PollCreator = ({ mb }) => {
             />
           )}
           <Stack direction="column" mt={5}>
+            <FormLabel>Settings</FormLabel>
             <Checkbox
               isChecked={multipleAnswers}
               onChange={() => {
@@ -215,6 +229,13 @@ const PollCreator = ({ mb }) => {
             >
               Set private (only accessible by direct link)
             </Checkbox>
+            <FormLabel>Duplicate vote detection</FormLabel>
+            <RadioGroup onChange={handleDuplicateCheck} value={duplicateCheck}>
+              <Stack direction="row">
+                <Radio value="ipAddress">Ip address</Radio>
+                <Radio value="session">Browser session</Radio>
+              </Stack>
+            </RadioGroup>
           </Stack>
 
           <Button
@@ -223,6 +244,7 @@ const PollCreator = ({ mb }) => {
             type="submit"
             width="full"
             isLoading={isSubmitting}
+            disabled={isSubmitting}
             loadingText="Creating"
             mt={5}
           >

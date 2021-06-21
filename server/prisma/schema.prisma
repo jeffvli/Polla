@@ -20,6 +20,7 @@ model Poll {
   user            User?          @relation(fields: [username], references: [username])
   username        String?        @db.VarChar(20)
   sessionId       String?        @db.VarChar(24)
+  dupCheckMode    String         @db.VarChar(10)
   pollQuestions   PollQuestion[]
   pollResponses   PollResponse[]
 }

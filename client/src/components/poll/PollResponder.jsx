@@ -9,9 +9,9 @@ import {
   Radio,
   CheckboxGroup,
   Checkbox,
+  useToast,
 } from "@chakra-ui/react";
 import { useParams, useHistory } from "react-router-dom";
-import Cookies from "universal-cookie";
 
 import PollShare from "./PollShare";
 import PollBox from "./PollBox";
@@ -25,7 +25,7 @@ const PollResponder = () => {
   const [singlePollResponse, setSinglePollResponse] = useState("");
   const [multiplePollResponse, setMultiplePollResponse] = useState([]);
   const history = useHistory();
-  const cookies = new Cookies();
+  const toast = useToast();
 
   const handleMultipleResponse = (e) => {
     const checkDup = multiplePollResponse.filter((pollRes) => {
@@ -76,7 +76,15 @@ const PollResponder = () => {
           setIsSubmitting(false);
           history.push(`/polls/${pollSlug}/results`);
         })
-        .catch((err) => console.error(err.response.data.error));
+        .catch((err) => {
+          toast({
+            title: "Invalid response.",
+            description: `Error submitting poll, try again. ${err.message}`,
+            status: "error",
+            duration: 3000,
+          });
+          setIsSubmitting(false);
+        });
     }
   };
 

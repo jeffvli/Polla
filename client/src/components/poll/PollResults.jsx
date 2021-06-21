@@ -8,15 +8,13 @@ import {
   Progress,
   CircularProgress,
   Center,
-  Flex,
-  Spacer,
+  SimpleGrid,
+  Tooltip,
 } from "@chakra-ui/react";
 import _ from "lodash";
-import Cookies from "universal-cookie";
 
 import PollBox from "./PollBox";
 import PollShare from "./PollShare";
-import ResponsiveBox from "../generic/responsivebox/ResponsiveBox";
 import { nanoid } from "nanoid";
 const ENDPOINT = "http://localhost:5000";
 
@@ -25,7 +23,6 @@ function PollResults({ user }) {
   const [poll, setPoll] = useState();
   const [totalResponders, setTotalResponders] = useState();
   const [totalResponses, setTotalResponses] = useState();
-  const cookies = new Cookies();
 
   useEffect(() => {
     //const socket = socketIOClient(ENDPOINT);
@@ -35,7 +32,6 @@ function PollResults({ user }) {
       let allResponses = [];
       let responseCount = 0;
 
-      const sessionId = cookies.get("sessionId");
       data.pollQuestions.map((q) => {
         allResponses.push(q.pollResponses);
       });
@@ -72,17 +68,30 @@ function PollResults({ user }) {
             <Stack spacing={8}>
               {poll.pollQuestions.map((question) => (
                 <Box key={nanoid()}>
-                  <Flex>
-                    <Text fontSize="lg">{question.question}</Text>
-                    <Spacer />
-                    <Text fontSize="sm" alignSelf="flex-start">
-                      {(
-                        (question.pollResponses.length / totalResponses) *
-                        100
-                      ).toFixed(1) +
-                        `% (${question.pollResponses.length} votes)`}
-                    </Text>
-                  </Flex>
+                  <SimpleGrid columns={2}>
+                    <Box>
+                      <Tooltip label={question.question}>
+                        <Text
+                          fontSize="lg"
+                          textOverflow="ellipsis"
+                          overflow="hidden"
+                          whiteSpace="nowrap"
+                        >
+                          {question.question}
+                        </Text>
+                      </Tooltip>
+                    </Box>
+
+                    <Box>
+                      <Text fontSize="sm" textAlign="end">
+                        {(
+                          (question.pollResponses.length / totalResponses) *
+                          100
+                        ).toFixed(1) +
+                          `% (${question.pollResponses.length} votes)`}
+                      </Text>
+                    </Box>
+                  </SimpleGrid>
                   <Progress
                     colorScheme={
                       question.pollResponses.find((response) => {

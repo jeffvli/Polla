@@ -73,6 +73,7 @@ router.post("/", checkAuthenticated, async (req, res) => {
     isPrivate,
     questions,
     sessionId,
+    dupCheckMode,
   } = req.body;
 
   if (!req.authenticated && req.headers.authorization) {
@@ -94,6 +95,12 @@ router.post("/", checkAuthenticated, async (req, res) => {
         );
     }
 
+    if (dupCheckMode !== "ipAddress" && dupCheckMode !== "session") {
+      return res
+        .status(422)
+        .json(errorMessage(422, "Invalid duplicate check mode."));
+    }
+
     const newPoll = await prisma.poll.create({
       data: {
         title,
@@ -104,6 +111,7 @@ router.post("/", checkAuthenticated, async (req, res) => {
         username: req.authenticated ? req.user.username : null,
         slug: await randomString(),
         sessionId,
+        dupCheckMode,
         pollQuestions: {
           create: questionData,
         },
@@ -124,6 +132,20 @@ router.post("/:slug/responses", checkAuthenticated, async (req, res) => {
     return res.sendStatus(401);
   }
 
+  if (req.body > 1) {
+    const multi = true;
+    if ((multi && !req.body[0].sessionId) || (!multi && !req.body.sessionId)) {
+      return res
+        .status(422)
+        .json(
+          errorMessage(
+            422,
+            "Invalid session Id, please refresh your page and try again."
+          )
+        );
+    }
+  }
+
   try {
     const ipAddress = req.ipInfo.ip;
     const selectedPoll = await prisma.poll.findUnique({
@@ -138,33 +160,74 @@ router.post("/:slug/responses", checkAuthenticated, async (req, res) => {
       },
     });
 
-    const duplicateUserOrIp = await existingPollResponses.filter(
-      (responses) => {
-        return req.authenticated
-          ? responses.ipAddress === ipAddress ||
-              responses.username === req.authenticated
-          : responses.ipAddress === ipAddress;
-      }
-    );
+    if (selectedPoll?.dupCheckMode === "ipAddress") {
+      const duplicateUserOrIp = await existingPollResponses.filter(
+        (responses) => {
+          if (req.authenticated) {
+            return (
+              responses.ipAddress === ipAddress ||
+              responses.username === req.user.username
+            );
+          } else {
+            return responses.ipAddress === ipAddress;
+          }
+        }
+      );
 
-    // Prevent the same user from voting multiple times to a poll
-    // Automatically replace the existing response if another is submitted
-    if (duplicateUserOrIp.length > 0) {
-      if (req.authenticated) {
+      // Prevent the same user from voting multiple times to a poll
+      // Automatically replace the existing response if another is submitted
+      if (duplicateUserOrIp.length > 0) {
+        if (req.authenticated) {
+          await prisma.pollResponse.deleteMany({
+            where: {
+              username: req.user.username,
+              pollId: Number(selectedPoll?.id),
+            },
+          });
+        }
         await prisma.pollResponse.deleteMany({
           where: {
-            username: req.user.username,
+            ipAddress: ipAddress,
             pollId: Number(selectedPoll?.id),
           },
         });
       }
+    } else {
+      const duplicateUserOrSession = await existingPollResponses.filter(
+        (responses) => {
+          if (req.authenticated) {
+            return (
+              responses.sessionId ===
+                (req.body.length > 1
+                  ? req.body[0].sessionId
+                  : req.body.sessionId) ||
+              responses.username === req.user.username
+            );
+          } else {
+            return req.body.length > 1
+              ? req.body[0].sessionId
+              : req.body.sessionId;
+          }
+        }
+      );
 
-      await prisma.pollResponse.deleteMany({
-        where: {
-          ipAddress: ipAddress,
-          pollId: Number(selectedPoll?.id),
-        },
-      });
+      if (duplicateUserOrSession.length > 0) {
+        if (req.authenticated) {
+          await prisma.pollResponse.deleteMany({
+            where: {
+              username: req.user.username,
+              pollId: Number(selectedPoll?.id),
+            },
+          });
+        }
+        await prisma.pollResponse.deleteMany({
+          where: {
+            sessionId:
+              req.body.length > 1 ? req.body[0].sessionId : req.body.sessionId,
+            pollId: Number(selectedPoll?.id),
+          },
+        });
+      }
     }
 
     // If the request data is not an array, it will fail on the preceeding
