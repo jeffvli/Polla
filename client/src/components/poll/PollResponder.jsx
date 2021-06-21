@@ -10,8 +10,10 @@ import {
   CheckboxGroup,
   Checkbox,
   useToast,
+  Alert,
 } from "@chakra-ui/react";
-import { useParams, useHistory } from "react-router-dom";
+import { AlertIcon } from "@chakra-ui/alert";
+import { useParams, useHistory, Link as RouterLink } from "react-router-dom";
 
 import PollShare from "./PollShare";
 import PollBox from "./PollBox";
@@ -20,7 +22,11 @@ import produce from "immer";
 
 const PollResponder = () => {
   const { pollSlug } = useParams();
-  const { poll, isLoading, isError } = usePoll(pollSlug);
+  const { poll, isLoading, isError } = usePoll(
+    pollSlug,
+    sessionStorage.getItem("sessionId"),
+    localStorage.getItem("token")
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [singlePollResponse, setSinglePollResponse] = useState("");
   const [multiplePollResponse, setMultiplePollResponse] = useState([]);
@@ -65,7 +71,15 @@ const PollResponder = () => {
           setIsSubmitting(false);
           history.push(`/polls/${pollSlug}/results`);
         })
-        .catch((err) => console.error(err.response.data.error));
+        .catch(() => {
+          toast({
+            title: "Invalid response.",
+            description: `Error submitting response, refresh and try again.`,
+            status: "error",
+            duration: 3000,
+          });
+          setIsSubmitting(false);
+        });
     } else {
       api
         .post(`/polls/${pollSlug}/responses`, {
@@ -76,10 +90,10 @@ const PollResponder = () => {
           setIsSubmitting(false);
           history.push(`/polls/${pollSlug}/results`);
         })
-        .catch((err) => {
+        .catch(() => {
           toast({
             title: "Invalid response.",
-            description: `Error submitting poll, try again. ${err.message}`,
+            description: `Error submitting response, refresh and try again.`,
             status: "error",
             duration: 3000,
           });
@@ -94,6 +108,12 @@ const PollResponder = () => {
         <>
           <PollBox poll={poll}>
             <Box>
+              {poll.pollResponses.length > 0 && (
+                <Alert status="warning" mb={3}>
+                  <AlertIcon />
+                  You have already voted in the poll.
+                </Alert>
+              )}
               <form onSubmit={handleSubmit}>
                 <FormControl isRequired>
                   <FormLabel>Select response</FormLabel>
@@ -147,7 +167,13 @@ const PollResponder = () => {
                   >
                     Submit Response
                   </Button>
-                  <Button size="md" colorScheme="gray" variant="outline">
+                  <Button
+                    as={RouterLink}
+                    to={`/polls/${pollSlug}/results`}
+                    size="md"
+                    colorScheme="gray"
+                    variant="outline"
+                  >
                     View Results
                   </Button>
                 </Stack>

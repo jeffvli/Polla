@@ -51,10 +51,14 @@ export const usePolls = () => {
   };
 };
 
-export const usePoll = (slug) => {
-  const { data, error } = useSWR(`/polls/${slug}`, fetcher, {
-    revalidateOnFocus: false,
-  });
+export const usePoll = (slug, sessionId, token) => {
+  const { data, error } = useSWR(
+    [`/polls/${slug}/?sessionId=${sessionId}`, token],
+    authFetcher,
+    {
+      revalidateOnFocus: false,
+    }
+  );
 
   return {
     poll: data,

@@ -15,8 +15,9 @@ router.get("/", async (req, res) => {
 });
 
 // Get a specific poll with questions
-router.get("/:slug", async (req, res) => {
+router.get("/:slug", checkAuthenticated, async (req, res) => {
   const { slug } = req.params;
+  const { sessionId } = req.query;
 
   try {
     const poll = await prisma.poll.findUnique({
@@ -25,6 +26,27 @@ router.get("/:slug", async (req, res) => {
       },
       include: {
         pollQuestions: true,
+        pollResponses: {
+          where: {
+            OR: [
+              {
+                username: {
+                  equals: req.authenticated ? req.user.username : void 0,
+                  mode: "insensitive",
+                },
+              },
+              {
+                sessionId: {
+                  equals: sessionId,
+                },
+              },
+            ],
+          },
+          select: {
+            username: true,
+            sessionId: true,
+          },
+        },
       },
     });
 
