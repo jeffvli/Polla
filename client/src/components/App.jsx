@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Randomstring from "randomstring";
 
 import Navbar from "./navbar/Navbar";
 import Footer from "./footer/Footer";
@@ -15,6 +16,10 @@ import { useUser } from "../api/api";
 function App() {
   const { user, isLoading, isError } = useUser(localStorage.getItem("token"));
 
+  if (!sessionStorage.getItem("sessionId")) {
+    sessionStorage.setItem("sessionId", Randomstring.generate(24));
+  }
+
   return (
     <>
       <Router>
@@ -29,12 +34,10 @@ function App() {
                 <Login user={user} />
               </Route>
               <Route path="/polls/:pollSlug/results">
-                <PollResults />
-                <PollShare mt="2rem" mb="5rem" />
+                <PollResults user={user} />
               </Route>
               <Route path="/polls/:pollSlug">
                 <PollResponder />
-                <PollShare mt="2rem" mb="5rem" />
               </Route>
               <Route exact path="/">
                 <PollCreator user={user} mb="5rem" />

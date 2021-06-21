@@ -25,8 +25,12 @@ const PollCreator = ({ mb }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [pollQuestions, setPollQuestions] = useState(["", "", ""]);
-  const [multipleAnswers, setMultipleAnswers] = useBoolean();
-  const [privatePoll, setPrivatePoll] = useBoolean();
+  const [multipleAnswers, setMultipleAnswers] = useBoolean(
+    localStorage.getItem("multipleAnswers") === "true" ? true : false
+  );
+  const [privatePoll, setPrivatePoll] = useBoolean(
+    localStorage.getItem("privatePoll") === "true" ? true : false
+  );
   const [insertType, setInsertType] = useState("single");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successResponse, setSuccessResponse] = useState({
@@ -63,6 +67,7 @@ const PollCreator = ({ mb }) => {
           multipleAnswers: multipleAnswers,
           isPrivate: privatePoll,
           questions: questions,
+          sessionId: sessionStorage.getItem("sessionId"),
         })
         .then((res) => {
           toast({
@@ -185,11 +190,29 @@ const PollCreator = ({ mb }) => {
             />
           )}
           <Stack direction="column" mt={5}>
-            <Checkbox onChange={setMultipleAnswers.toggle}>
+            <Checkbox
+              isChecked={multipleAnswers}
+              onChange={() => {
+                setMultipleAnswers.toggle();
+                localStorage.setItem(
+                  "multipleAnswers",
+                  multipleAnswers === false ? "true" : "false"
+                );
+              }}
+            >
               Allow multiple answers
             </Checkbox>
 
-            <Checkbox onChange={setPrivatePoll.toggle}>
+            <Checkbox
+              isChecked={privatePoll}
+              onChange={() => {
+                setPrivatePoll.toggle();
+                localStorage.setItem(
+                  "privatePoll",
+                  privatePoll === false ? "true" : "false"
+                );
+              }}
+            >
               Set private (only accessible by direct link)
             </Checkbox>
           </Stack>

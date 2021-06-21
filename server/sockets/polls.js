@@ -1,14 +1,28 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const emitResponses = async (socket) => {
-  const pollResponses = await prisma.pollResponse.findMany({
+const emitPollResults = async (socket, slug) => {
+  const poll = await prisma.poll.findUnique({
     where: {
-      pollId: 9,
+      slug: slug,
+    },
+    include: {
+      pollQuestions: {
+        select: {
+          question: true,
+          pollResponses: {
+            select: {
+              ipAddress: true,
+              username: true,
+              sessionId: true,
+            },
+          },
+        },
+      },
     },
   });
 
-  socket.emit("Responses", pollResponses);
+  socket.emit("Responses", poll);
 };
 
-exports.emitResponses = emitResponses;
+exports.emitPollResults = emitPollResults;

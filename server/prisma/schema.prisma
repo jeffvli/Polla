@@ -19,6 +19,7 @@ model Poll {
   slug            String         @unique @db.VarChar(10)
   user            User?          @relation(fields: [username], references: [username])
   username        String?        @db.VarChar(20)
+  sessionId       String?        @db.VarChar(24)
   pollQuestions   PollQuestion[]
   pollResponses   PollResponse[]
 }
@@ -33,13 +34,14 @@ model PollQuestion {
 
 model PollResponse {
   id             Int          @id @default(autoincrement())
-  ipAddress      String       @db.VarChar(45)
+  ipAddress      String       @db.VarChar
   poll           Poll         @relation(fields: [pollId], references: [id])
   pollId         Int
   pollQuestion   PollQuestion @relation(fields: [pollQuestionId], references: [id])
   pollQuestionId Int
   user           User?        @relation(fields: [username], references: [username])
   username       String?      @db.VarChar(20)
+  sessionId      String?      @db.VarChar(24)
 }
 
 model User {

@@ -65,8 +65,15 @@ router.get("/:slug/responses", async (req, res) => {
 
 // POST a new poll with questions
 router.post("/", checkAuthenticated, async (req, res) => {
-  const { title, description, multipleAnswers, isOpen, isPrivate, questions } =
-    req.body;
+  const {
+    title,
+    description,
+    multipleAnswers,
+    isOpen,
+    isPrivate,
+    questions,
+    sessionId,
+  } = req.body;
 
   if (!req.authenticated && req.headers.authorization) {
     return res.sendStatus(401);
@@ -96,6 +103,7 @@ router.post("/", checkAuthenticated, async (req, res) => {
         isPrivate,
         username: req.authenticated ? req.user.username : null,
         slug: await randomString(),
+        sessionId,
         pollQuestions: {
           create: questionData,
         },
@@ -111,13 +119,13 @@ router.post("/", checkAuthenticated, async (req, res) => {
 // POST responses to a specific poll
 router.post("/:slug/responses", checkAuthenticated, async (req, res) => {
   const { slug } = req.params;
-  const ipAddress = req.ipInfo.ip;
 
   if (!req.authenticated && req.headers.authorization) {
     return res.sendStatus(401);
   }
 
   try {
+    const ipAddress = req.ipInfo.ip;
     const selectedPoll = await prisma.poll.findUnique({
       where: {
         slug: slug,
@@ -132,10 +140,10 @@ router.post("/:slug/responses", checkAuthenticated, async (req, res) => {
 
     const duplicateUserOrIp = await existingPollResponses.filter(
       (responses) => {
-        return (
-          responses.ipAddress === ipAddress ||
-          responses.username === req.user.username
-        );
+        return req.authenticated
+          ? responses.ipAddress === ipAddress ||
+              responses.username === req.authenticated
+          : responses.ipAddress === ipAddress;
       }
     );
 
@@ -172,6 +180,7 @@ router.post("/:slug/responses", checkAuthenticated, async (req, res) => {
         username: req.authenticated ? req.user.username : null,
         pollId: Number(selectedPoll?.id),
         pollQuestionId: Number(data.questionId),
+        sessionId: data.sessionId,
       };
     });
 
@@ -182,6 +191,7 @@ router.post("/:slug/responses", checkAuthenticated, async (req, res) => {
 
     res.json(responseData);
   } catch (err) {
+    console.log(err);
     res.status(500).json(errorMessage(500, `${err}`));
   }
 });

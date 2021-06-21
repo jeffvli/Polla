@@ -3,7 +3,7 @@ import { Box } from "@chakra-ui/react";
 
 import { defaultResponsiveWidth } from "../../styling";
 
-const ResponsiveBox = ({ children, variant, mt, mb }) => {
+const ResponsiveBox = ({ children, variant, mt, mb, isLoading }) => {
   return (
     <Box
       width={defaultResponsiveWidth}
@@ -17,6 +17,7 @@ const ResponsiveBox = ({ children, variant, mt, mb }) => {
       mr="auto"
       mb={mb}
       mt={mt}
+      pointerEvents={isLoading ? "none" : void 0}
     >
       {children}
     </Box>

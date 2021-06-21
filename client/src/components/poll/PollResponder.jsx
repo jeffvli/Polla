@@ -1,27 +1,22 @@
 import React, { useState } from "react";
 import {
   Box,
-  Heading,
   Stack,
   Button,
   FormControl,
   FormLabel,
   RadioGroup,
   Radio,
-  Text,
-  Divider,
   CheckboxGroup,
   Checkbox,
-  Center,
 } from "@chakra-ui/react";
-import { formatDistance } from "date-fns";
 import { useParams, useHistory } from "react-router-dom";
+import Cookies from "universal-cookie";
 
+import PollShare from "./PollShare";
 import PollBox from "./PollBox";
 import { api, usePoll } from "../../api/api";
 import produce from "immer";
-import ResponsiveBox from "../generic/responsivebox/ResponsiveBox";
-import { nanoid } from "nanoid";
 
 const PollResponder = () => {
   const { pollSlug } = useParams();
@@ -30,6 +25,7 @@ const PollResponder = () => {
   const [singlePollResponse, setSinglePollResponse] = useState("");
   const [multiplePollResponse, setMultiplePollResponse] = useState([]);
   const history = useHistory();
+  const cookies = new Cookies();
 
   const handleMultipleResponse = (e) => {
     const checkDup = multiplePollResponse.filter((pollRes) => {
@@ -58,7 +54,10 @@ const PollResponder = () => {
     setIsSubmitting(true);
     if (poll.multipleAnswers) {
       const pollResponses = multiplePollResponse.map((pollRes) => {
-        return { questionId: pollRes.id };
+        return {
+          questionId: pollRes.id,
+          sessionId: sessionStorage.getItem("sessionId"),
+        };
       });
       api
         .post(`/polls/${pollSlug}/responses`, pollResponses)
@@ -68,10 +67,10 @@ const PollResponder = () => {
         })
         .catch((err) => console.error(err.response.data.error));
     } else {
-      console.log(singlePollResponse.id);
       api
         .post(`/polls/${pollSlug}/responses`, {
           questionId: singlePollResponse.id,
+          sessionId: sessionStorage.getItem("sessionId"),
         })
         .then(() => {
           setIsSubmitting(false);
@@ -114,6 +113,7 @@ const PollResponder = () => {
                         {poll.pollQuestions.map((question) => (
                           <Radio
                             value={question.question}
+                            key={question.id}
                             size="lg"
                             spacing={3}
                             onChange={() => setSinglePollResponse(question)}
@@ -135,6 +135,7 @@ const PollResponder = () => {
                     width="full"
                     isLoading={false}
                     loadingText="Creating"
+                    disabled={isSubmitting}
                   >
                     Submit Response
                   </Button>
@@ -145,6 +146,7 @@ const PollResponder = () => {
               </form>
             </Box>
           </PollBox>
+          <PollShare mt="2rem" mb="5rem" />
         </>
       )}
     </>
