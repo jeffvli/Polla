@@ -1,11 +1,11 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const localStrategy = require("passport-local").Strategy;
 const passportJWT = require("passport-jwt");
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
+
+const prisma = require("../utils/initPrisma");
 
 const authenticateUser = async (username, password, done) => {
   try {

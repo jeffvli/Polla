@@ -1,5 +1,3 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
@@ -7,6 +5,7 @@ const Joi = require("joi");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
 
+const prisma = require("../../utils/initPrisma");
 const redisClient = require("../../utils/initRedis");
 const errorMessage = require("../../utils/errorMessage");
 

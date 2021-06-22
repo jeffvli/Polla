@@ -1,12 +1,12 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
 const express = require("express");
 const router = express.Router();
 const _ = require("lodash");
 
+const prisma = require("../../utils/initPrisma");
 const checkAuthenticated = require("../../middleware/checkAuthenticated");
 const randomString = require("../../utils/randomString");
 const errorMessage = require("../../utils/errorMessage");
+const { poll } = require("../../utils/initPrisma");
 
 // GET all polls
 router.get("/", async (req, res) => {
@@ -67,19 +67,70 @@ router.get("/:slug/responses", async (req, res) => {
   const { slug } = req.params;
 
   try {
-    const selectedPoll = await prisma.poll.findUnique({
+    const responses = await prisma.pollResponse.findMany({
+      where: {
+        poll: {
+          slug: slug,
+        },
+      },
+    });
+
+    res.json(responses);
+  } catch (err) {
+    res.status(500).json(errorMessage(500, `${err}`));
+  }
+});
+
+router.get("/:slug/results", async (req, res) => {
+  const { slug } = req.params;
+  try {
+    const poll = await prisma.poll.findUnique({
       where: {
         slug: slug,
+      },
+      include: {
+        pollQuestions: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
 
     const responses = await prisma.pollResponse.findMany({
       where: {
-        pollId: Number(selectedPoll?.id),
+        poll: {
+          slug: slug,
+        },
+      },
+      select: {
+        pollQuestionId: true,
+        ipAddress: true,
+        username: true,
+        sessionId: true,
       },
     });
 
-    res.json(responses);
+    const results = {};
+    await poll.pollQuestions.map((q) => {
+      let name = String(q.id);
+      results[name] = 0;
+      return q.id;
+    });
+
+    await responses.reduce((acc, pollRes) => {
+      acc[pollRes.pollQuestionId]++;
+      return acc;
+    }, results);
+
+    results.totalResponses = responses.length;
+    if (poll?.dupCheckMode === "session") {
+      results.uniqueResponders = _.uniqBy(responses, "sessionId").length;
+    } else {
+      results.uniqueResponders = _.uniqBy(responses, "ipAddress").length;
+    }
+
+    res.json({ responses: responses, results: results });
   } catch (err) {
     res.status(500).json(errorMessage(500, `${err}`));
   }

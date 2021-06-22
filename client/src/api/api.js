@@ -51,7 +51,7 @@ export const usePolls = () => {
   };
 };
 
-export const usePoll = (slug, sessionId, token) => {
+export const usePollAuth = (slug, sessionId, token) => {
   const { data, error } = useSWR(
     [`/polls/${slug}/?sessionId=${sessionId}`, token],
     authFetcher,
@@ -67,9 +67,35 @@ export const usePoll = (slug, sessionId, token) => {
   };
 };
 
+export const usePoll = (slug) => {
+  const { data, error } = useSWR(`/polls/${slug}`, fetcher, {
+    revalidateOnFocus: false,
+  });
+
+  return {
+    poll: data,
+    isLoading: !error && !data,
+    isError: error,
+  };
+};
+
+export const usePollResults = (slug) => {
+  const { data, error } = useSWR(`/polls/${slug}/results`, fetcher, {
+    revalidateOnFocus: false,
+    refreshInterval: 1000,
+  });
+
+  return {
+    pollResults: data,
+    isLoading: !error && !data,
+    isError: error,
+  };
+};
+
 export const useUser = (token) => {
   const { data, error } = useSWR(["/auth/user", token], authFetcher, {
     revalidateOnFocus: false,
+    shouldRetryOnError: false,
   });
 
   return {

@@ -17,12 +17,12 @@ import { useParams, useHistory, Link as RouterLink } from "react-router-dom";
 
 import PollShare from "./PollShare";
 import PollBox from "./PollBox";
-import { api, usePoll } from "../../api/api";
+import { api, usePollAuth } from "../../api/api";
 import produce from "immer";
 
 const PollResponder = () => {
   const { pollSlug } = useParams();
-  const { poll, isLoading, isError } = usePoll(
+  const { poll, isLoading, isError } = usePollAuth(
     pollSlug,
     sessionStorage.getItem("sessionId"),
     localStorage.getItem("token")
