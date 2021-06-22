@@ -1,21 +1,39 @@
 import React from "react";
-import { Box, Heading, Text, Divider, Link } from "@chakra-ui/react";
+import {
+  Box,
+  Heading,
+  Text,
+  Divider,
+  Link,
+  SimpleGrid,
+} from "@chakra-ui/react";
 import { formatDistance } from "date-fns";
 import { Link as RouterLink } from "react-router-dom";
 
 import ResponsiveBox from "../generic/responsivebox/ResponsiveBox";
 
-const PollBox = ({ poll, children }) => {
+const PollBox = ({ poll, children, headerLeft, headerCenter, headerRight }) => {
   return (
     <>
       {poll && (
         <>
           <ResponsiveBox variant="bordered">
-            <Box textAlign="center" pb={10}>
-              <Heading>{poll.title}</Heading>
-              <Text fontSize="sm" mt="1rem">
-                {poll.description}
-              </Text>
+            <SimpleGrid columns={3}>
+              <Box>{headerLeft}</Box>
+              <Box>{headerCenter}</Box>
+              <Box>{headerRight}</Box>
+            </SimpleGrid>
+            <Box pb={10}>
+              <Box textAlign="center">
+                <Heading fontSize="3xl">{poll.title}</Heading>
+              </Box>
+              {poll.description && (
+                <Box textAlign="center">
+                  <Text as="i" fontSize="sm" mt="1rem">
+                    "{poll.description}"
+                  </Text>
+                </Box>
+              )}
             </Box>
             {children}
             <Divider mt={5} mb={5} />
