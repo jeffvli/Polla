@@ -143,7 +143,7 @@ const PollCreator = ({ mb }) => {
             <FormLabel>Poll Title</FormLabel>
             <Input
               size="lg"
-              maxLength={255}
+              maxLength={128}
               placeholder="Enter a title..."
               autoComplete="off"
               onChange={(e) => setTitle(e.currentTarget.value)}
@@ -153,7 +153,7 @@ const PollCreator = ({ mb }) => {
           <FormLabel mt={5}>Description (optional)</FormLabel>
           <Textarea
             resize="none"
-            maxLength={400}
+            maxLength={256}
             placeholder="Enter a description..."
             autoComplete="off"
             onChange={(e) => setDescription(e.target.value)}

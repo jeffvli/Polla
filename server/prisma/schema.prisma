@@ -9,8 +9,8 @@ generator client {
 
 model Poll {
   id              Int            @id @default(autoincrement())
-  title           String         @db.VarChar(255)
-  description     String?        @db.VarChar(400)
+  title           String         @db.VarChar(128)
+  description     String?        @db.VarChar(256)
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   isOpen          Boolean        @default(true)
