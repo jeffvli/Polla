@@ -39,7 +39,7 @@ const PollCreator = ({ mb }) => {
       : "ipAddress";
   });
   const [pasteInsert, setPasteInsert] = useBoolean(() => {
-    return localStorage.getItem("pasteInsert" === "true" ? true : false);
+    return localStorage.getItem("pasteInsert") === "true" ? true : false;
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successResponse, setSuccessResponse] = useState({
@@ -99,12 +99,23 @@ const PollCreator = ({ mb }) => {
           setIsSubmitting(false);
         })
         .catch((err) => {
-          toast({
-            title: "Error creating poll.",
-            description: `${err.response.data.error.message}`,
-            status: "error",
-            duration: 3000,
-          });
+          if (err.response.status === 401) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("refreshToken");
+            toast({
+              title: "Error creating poll.",
+              description: "Refresh and try again.",
+              status: "error",
+              duration: 3000,
+            });
+          } else {
+            toast({
+              title: "Error creating poll.",
+              description: `${err.response.data.error.message}`,
+              status: "error",
+              duration: 3000,
+            });
+          }
           setIsSubmitting(false);
         });
     }
@@ -118,11 +129,6 @@ const PollCreator = ({ mb }) => {
     );
   };
 
-  const handleInsertType = () => {
-    localStorage.getItem("insertType") === "single"
-      ? localStorage.setItem("insertType", "area")
-      : localStorage.setItem("insertType", "single");
-  };
   return (
     <ResponsiveBox variant="bordered" mb={mb}>
       <Box textAlign="center" pb={10}>
@@ -167,14 +173,14 @@ const PollCreator = ({ mb }) => {
                 setPasteInsert.toggle();
                 localStorage.setItem(
                   "pasteInsert",
-                  pasteInsert === true ? "true" : "false"
+                  pasteInsert === false ? "true" : "false"
                 );
               }}
             >
               {pasteInsert === true ? "Paste" : "Enter"}
             </Button>
           </HStack>
-          {pasteInsert === true ? (
+          {pasteInsert === false ? (
             <Stack spacing={3}>
               {pollQuestions.map((question, index) => {
                 return (
@@ -205,7 +211,7 @@ const PollCreator = ({ mb }) => {
               resize="vertical"
               variant="filled"
               value={
-                pollQuestions.join("\n").trim() == ""
+                pollQuestions.join("\n").trim() === ""
                   ? ""
                   : pollQuestions.join("\n")
               }
