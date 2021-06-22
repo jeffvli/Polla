@@ -140,7 +140,7 @@ const Register = () => {
     );
   };
 
-  const handlePassword = (e, repeat) => {
+  const handlePassword = (e) => {
     let passwordTxt = e.target.value;
     setPassword(passwordTxt);
 
@@ -179,7 +179,6 @@ const Register = () => {
     const delayDebounceFn = setTimeout(() => {
       if (username !== "" && username.length > 2) {
         api.get(`/users?username=${username}`).then((res) => {
-          console.log(res);
           setUsernameRequirements(
             produce(usernameRequirements, (draft) => {
               const isAvailableIndex = draft.findIndex(
@@ -221,7 +220,12 @@ const Register = () => {
           >
             <FormControl isRequired>
               <FormLabel>Username</FormLabel>
-              <Input size="lg" maxLength="20" onChange={handleUsername} />
+              <Input
+                autoFocus
+                size="lg"
+                maxLength="20"
+                onChange={handleUsername}
+              />
             </FormControl>
             <List mt={5} spacing={2}>
               {usernameRequirements.map((requirement) => (

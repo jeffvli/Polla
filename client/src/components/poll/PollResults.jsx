@@ -41,12 +41,8 @@ function PollResults({ user }) {
           <PollBox
             poll={poll}
             headerLeft={
-              <Button
-                as={RouterLink}
-                to={`/polls/${pollSlug}/`}
-                variant="unstyled"
-              >
-                <Text>
+              <Button as={RouterLink} to={`/polls/${pollSlug}/`} variant="link">
+                <Text fontSize="sm">
                   <ArrowBackIcon /> Back to poll
                 </Text>
               </Button>

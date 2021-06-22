@@ -71,11 +71,12 @@ const Login = ({ user }) => {
         >
           <form onSubmit={handleSubmit}>
             <Stack spacing={4}>
-              <FormControl id="email">
+              <FormControl id="username">
                 <FormLabel>Username</FormLabel>
                 <Input
                   type="text"
                   onChange={(e) => setUsername(e.target.value)}
+                  autoFocus
                 />
               </FormControl>
               <FormControl id="password">
