@@ -5,7 +5,7 @@ ADD docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
 
 # Change directory so that our commands run inside this new directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Copy dependency definitions
 COPY package*.json ./

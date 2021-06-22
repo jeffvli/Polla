@@ -2,7 +2,7 @@
 FROM node:15.9.0-alpine3.13
 
 # set working directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # install app dependencies
 COPY package*.json ./
