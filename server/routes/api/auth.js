@@ -104,7 +104,7 @@ router.post("/token", (req, res) => {
   if (refreshToken === null) return res.sendStatus(401);
   //if (!redisClient.GET(userId)) return res.sendStatus(403);
   jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
-    if (err) return sendStatus(403);
+    if (err) return res.sendStatus(403);
 
     redisClient.GET(user.id, (err, result) => {
       if (err) {

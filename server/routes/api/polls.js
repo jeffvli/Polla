@@ -99,7 +99,7 @@ router.post("/", checkAuthenticated, async (req, res) => {
   } = req.body;
 
   if (!req.authenticated && req.headers.authorization) {
-    return res.sendStatus(401);
+    return res.status(401).json(errorMessage(401, "Invalid authorization."));
   }
 
   try {
