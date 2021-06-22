@@ -1,0 +1,16 @@
+# Client environment variables
+BASE_URL=http://localhost:3000
+API_BASE_URL=http://localhost:5000
+API_URL=http://localhost:5000/api
+GITHUB_URL=https://github.com/jeffvli/Polla
+
+# Server environment variables
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=polla
+APP_BASE_URL=http://localhost:3000
+JWT_SECRET=HbLbCV9HFTr7gzdMcipsw4zFnvP6KrZU
+JWT_SECRET_EXPIRATION=5m
+JWT_REFRESH_SECRET=Bwk8JmNkFbX2MVf6uJtqHFqkvCja9nnT
+JWT_REFRESH_SECRET_EXPIRATION=30d
+REDIS_PORT=6379

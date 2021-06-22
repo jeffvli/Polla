@@ -1,13 +1,18 @@
 version: "3"
 services:
-  mongo:
-    image: mongo:latest
+  db:
+    container_name: polla_db
+    image: postgres:13
     ports:
-      - "20717:20717"
+      - "5432:5432"
     volumes:
       - /data/db # Create a volume for the DB.
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
   client:
-    container_name: client
+    container_name: polla_client
     build:
       context: ./client
       dockerfile: Dockerfile
@@ -16,30 +21,56 @@ services:
     restart: always
     environment:
       - NODE_ENV=development
-      - REACT_APP_API_URL=http://localhost:8081
       - CHOKIDAR_USEPOLLING=true # Hot reloading create react app : https://mherman.org/blog/dockerizing-a-react-app/ ; https://create-react-app.dev/docs/troubleshooting/#npm-start-doesn-t-detect-changes
+      - REACT_APP_BASE_URL=${BASE_URL}
+      - REACT_APP_API_BASE_URL=${API_BASE_URL}
+      - REACT_APP_API_URL=${API_URL}
+      - REACT_APP_GITHUB_URL=${GITHUB_URL}
     restart: always
     stdin_open: true # Hot reloading create react app: https://github.com/facebook/create-react-app/issues/8688#issuecomment-602110747
     volumes:
       - ./client:/app #Synchronise docker container with local change
       - /app/node_modules #Avoid re-copying local node_modules. Cache in container.
   server:
+    container_name: polla_server
     build:
       context: ./server
       dockerfile: Dockerfile
     depends_on:
-      - mongo
+      - db
+      - redis
     environment:
       - NODE_ENV=development
-      - MONGO_URI=mongodb://mongo:27017/DEV
-      - PORT=8081
-      - HOST=localhost:3000
-      - SENDGRID_API_KEY=<YOUR_KEY_HERE>
-      - SENDING_EMAIL=<YOUR_SENDING_EMAIL_HERE>
-      - SESSION_KEY=<YOUR_KEY_HERE>
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+      - APP_BASE_URL=${APP_BASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_SECRET_EXPIRATION=${JWT_SECRET_EXPIRATION}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - JWT_REFRESH_SECRET_EXPIRATION=${JWT_REFRESH_SECRET_EXPIRATION}
+      - REDIS_HOST=redis
+      - REDIS_PORT=${REDIS_PORT}
     ports:
-      - "8081:8081"
+      - "5000:5000"
     restart: always
     volumes:
       - ./server:/app #Synchronise docker container with local change
       - /app/node_modules #Avoid re-copying local node_modules. Cache in container.
+  redis:
+    container_name: polla_redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+  prisma:
+    container_name: polla_prisma_studio
+    depends_on:
+      - db
+      - server
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+    ports:
+      - '5555:5555'
+    build:
+      context: server/prisma
+      dockerfile: Dockerfile
+    volumes:
+      - /app/prisma

@@ -1,16 +1,17 @@
 # pull official base image
-FROM node:15.9.0-alpine3.13 
+FROM node:15.9.0-alpine3.13
+
 # set working directory
-WORKDIR /app
+WORKDIR /usr/src/app
 
 # install app dependencies
-COPY package.json ./
-COPY yarn.lock ./
+COPY package*.json ./
 
-RUN yarn install
+RUN npm install
 
 # add app
 COPY . ./
 
 # start app
-CMD ["yarn", "start"]
+EXPOSE 3000
+CMD ["npm", "start"]
