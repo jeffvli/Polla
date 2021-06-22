@@ -1,5 +1,4 @@
-import { io } from "socket.io-client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import {
   Box,
@@ -104,7 +103,10 @@ function PollResults({ user }) {
                         : "blue"
                     }
                     size="md"
-                    value={pollResults.results[question.id] * 100}
+                    value={
+                      (pollResults.results[question.id] * 100) /
+                      pollResults.results.totalResponses
+                    }
                   />
                 </Box>
               ))}
