@@ -38,7 +38,9 @@ const PollCreator = ({ mb }) => {
       ? "session"
       : "ipAddress";
   });
-  const [insertType, setInsertType] = useState("single");
+  const [pasteInsert, setPasteInsert] = useBoolean(() => {
+    return localStorage.getItem("pasteInsert" === "true" ? true : false);
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successResponse, setSuccessResponse] = useState({
     id: null,
@@ -117,7 +119,9 @@ const PollCreator = ({ mb }) => {
   };
 
   const handleInsertType = () => {
-    insertType === "single" ? setInsertType("area") : setInsertType("single");
+    localStorage.getItem("insertType") === "single"
+      ? localStorage.setItem("insertType", "area")
+      : localStorage.setItem("insertType", "single");
   };
   return (
     <ResponsiveBox variant="bordered" mb={mb}>
@@ -151,7 +155,7 @@ const PollCreator = ({ mb }) => {
 
           <HStack mt={5}>
             <FormLabel width="full">
-              {insertType === "single"
+              {pasteInsert === false
                 ? "Questions"
                 : "Questions (enter one option per line)"}
             </FormLabel>
@@ -159,12 +163,18 @@ const PollCreator = ({ mb }) => {
               leftIcon={<CopyIcon />}
               variant="ghost"
               size="xs"
-              onClick={handleInsertType}
+              onClick={() => {
+                setPasteInsert.toggle();
+                localStorage.setItem(
+                  "pasteInsert",
+                  pasteInsert === true ? "true" : "false"
+                );
+              }}
             >
-              {insertType === "single" ? "Paste" : "Enter"}
+              {pasteInsert === true ? "Paste" : "Enter"}
             </Button>
           </HStack>
-          {insertType === "single" ? (
+          {pasteInsert === true ? (
             <Stack spacing={3}>
               {pollQuestions.map((question, index) => {
                 return (
