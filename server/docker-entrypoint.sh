@@ -1,4 +1,4 @@
 #!/bin/sh
-npx prisma migrate dev --name "init"
+npx prisma migrate dev --name "migrate"
 
-node index.js
+npm run dev
