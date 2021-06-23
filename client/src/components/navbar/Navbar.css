@@ -10,3 +10,7 @@
 nav {
   margin-bottom: 50px;
 }
+
+.chakra-menu__menu-list {
+  background: #282c34 !important;
+}

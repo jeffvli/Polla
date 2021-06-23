@@ -1,10 +1,26 @@
 import { Link as RouterLink } from "react-router-dom";
-import { Flex, Spacer, Box, Text, Stack, Button, Link } from "@chakra-ui/react";
+import {
+  Flex,
+  Spacer,
+  Box,
+  Text,
+  Stack,
+  Button,
+  Link,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Avatar,
+} from "@chakra-ui/react";
+import { useHistory } from "react-router-dom";
 
 import "./Navbar.css";
 import { api } from "../../api/api";
 
 const Navbar = ({ user }) => {
+  const history = useHistory();
+
   return (
     <nav>
       <Flex backgroundColor="#12161E">
@@ -19,24 +35,33 @@ const Navbar = ({ user }) => {
           <Text fontSize="2xl">Polla</Text>
         </Link>
         <Spacer />
-        <Box mt={0.5}>
+        <Box mt="auto" mb="auto" pr={2}>
           <Stack direction="row">
             {user.isAuthenticated && user !== undefined ? (
               <>
-                <Button
-                  size="sm"
-                  m="auto"
-                  variant="ghost"
-                  onClick={() => {
-                    api.delete("/auth/logout").then(() => {
-                      localStorage.removeItem("token");
-                      localStorage.removeItem("refreshToken");
-                      window.location.reload();
-                    });
-                  }}
-                >
-                  Log out
-                </Button>
+                <Menu backgroundColor="aliceblue">
+                  <MenuButton>{user.data.username}</MenuButton>
+                  <MenuList>
+                    <MenuItem
+                      onClick={() => {
+                        history.push(`/profile/${user.data.username}`);
+                      }}
+                    >
+                      View Profile
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        api.delete("/auth/logout").then(() => {
+                          localStorage.removeItem("token");
+                          localStorage.removeItem("refreshToken");
+                          window.location.reload();
+                        });
+                      }}
+                    >
+                      Logout
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
               </>
             ) : (
               <>
