@@ -1,7 +1,7 @@
 import React from "react";
 import { Box } from "@chakra-ui/react";
 
-import { defaultResponsiveWidth } from "../../styling";
+import { defaultResponsiveWidth } from "../../../theme";
 
 const ResponsiveBox = ({ children, variant, mt, mb, isLoading }) => {
   return (
