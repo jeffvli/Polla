@@ -196,7 +196,7 @@ const Register = () => {
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [username]);
+  }, [username, usernameRequirements]);
 
   return (
     <>
@@ -222,6 +222,7 @@ const Register = () => {
               <FormLabel>Username</FormLabel>
               <Input
                 autoFocus
+                autoComplete="username"
                 size="lg"
                 maxLength="20"
                 onChange={handleUsername}
@@ -251,6 +252,7 @@ const Register = () => {
                 <FormLabel>Password</FormLabel>
                 <InputGroup>
                   <Input
+                    autoComplete="new-password"
                     size="lg"
                     maxLength="64"
                     type="password"
@@ -262,6 +264,7 @@ const Register = () => {
                 <FormLabel>Repeat Password</FormLabel>
                 <InputGroup>
                   <Input
+                    autoComplete="new-password"
                     size="lg"
                     maxLength="64"
                     type="password"

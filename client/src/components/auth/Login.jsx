@@ -37,9 +37,15 @@ const Login = ({ user }) => {
         window.location.replace(`${process.env.REACT_APP_BASE_URL}`);
       })
       .catch((err) => {
+        let errMessage;
+        if (err.response.status === 401) {
+          errMessage = "The provided credentials are invalid.";
+        } else {
+          errMessage = err.message;
+        }
         toast({
           title: "Error signing in.",
-          description: "The provided credentials are invalid.",
+          description: errMessage,
           status: "error",
           duration: 4000,
         });
@@ -71,17 +77,24 @@ const Login = ({ user }) => {
         >
           <form onSubmit={handleSubmit}>
             <Stack spacing={4}>
-              <FormControl id="username">
+              <FormControl isRequired>
                 <FormLabel>Username</FormLabel>
                 <Input
+                  autoFocus
+                  autoComplete="username"
+                  id="loginUsername"
+                  name="username"
                   type="text"
                   onChange={(e) => setUsername(e.target.value)}
-                  autoFocus
                 />
               </FormControl>
-              <FormControl id="password">
+              <FormControl isRequired>
                 <FormLabel>Password</FormLabel>
                 <Input
+                  required
+                  autoComplete="current-password"
+                  id="loginPassword"
+                  name="password"
                   type="password"
                   onChange={(e) => setPassword(e.target.value)}
                 />
