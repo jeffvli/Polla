@@ -11,18 +11,34 @@ import {
   Checkbox,
   useToast,
   Alert,
+  Text,
+  Tag,
+  TagLabel,
+  TagLeftIcon,
+  Flex,
+  Spacer,
+  useBreakpointValue,
 } from "@chakra-ui/react";
+import {
+  ArrowBackIcon,
+  UnlockIcon,
+  LockIcon,
+  ViewIcon,
+  ViewOffIcon,
+} from "@chakra-ui/icons";
 import { AlertIcon } from "@chakra-ui/alert";
 import { useParams, useHistory, Link as RouterLink } from "react-router-dom";
 
+import MissingPage from "../missingpage/MissingPage";
 import PollShare from "./PollShare";
 import PollBox from "./PollBox";
 import { api, usePollAuth } from "../../api/api";
 import produce from "immer";
+import PollSettings from "./PollSettings";
 
-const PollResponder = () => {
+const PollResponder = ({ user }) => {
   const { pollSlug } = useParams();
-  const { poll, isLoading, isError } = usePollAuth(
+  const { poll, isError } = usePollAuth(
     pollSlug,
     sessionStorage.getItem("sessionId"),
     localStorage.getItem("token")
@@ -32,6 +48,8 @@ const PollResponder = () => {
   const [multiplePollResponse, setMultiplePollResponse] = useState([]);
   const history = useHistory();
   const toast = useToast();
+  const buttonSize = useBreakpointValue({ base: "sm", md: "md" });
+  const optionSize = useBreakpointValue({ base: "md", md: "lg" });
 
   const handleMultipleResponse = (e) => {
     const checkDup = multiplePollResponse.filter((pollRes) => {
@@ -104,19 +122,95 @@ const PollResponder = () => {
 
   return (
     <>
-      {poll && (
+      {isError && <MissingPage />}
+      {poll && user && (
         <>
-          <PollBox poll={poll}>
+          <PollBox
+            poll={poll}
+            headerLeft={
+              <Button as={RouterLink} to="/" variant="link">
+                <ArrowBackIcon />
+                <Text display={{ base: "none", md: "block" }} fontSize="sm">
+                  Back to poll creation
+                </Text>
+              </Button>
+            }
+            headerRight={
+              <>
+                <Tag
+                  ml={1}
+                  size="sm"
+                  float="right"
+                  colorScheme={poll.isPrivate === true ? "red" : "green"}
+                >
+                  <TagLeftIcon
+                    display={{ base: "none", md: "block" }}
+                    as={poll.isPrivate === true ? ViewOffIcon : ViewIcon}
+                  />
+                  <TagLabel display={{ base: "none", md: "block" }}>
+                    {poll.isPrivate === true ? "Private" : "Public"}
+                  </TagLabel>
+
+                  {poll.isPrivate === true ? (
+                    <ViewOffIcon display={{ base: "block", md: "none" }} />
+                  ) : (
+                    <ViewIcon display={{ base: "block", md: "none" }} />
+                  )}
+                </Tag>
+                <Tag
+                  size="sm"
+                  float="right"
+                  colorScheme={poll.isOpen === true ? "green" : "red"}
+                >
+                  <TagLeftIcon
+                    display={{ base: "none", md: "block" }}
+                    as={poll.isOpen === true ? UnlockIcon : LockIcon}
+                  />
+                  <TagLabel display={{ base: "none", md: "block" }}>
+                    {poll.isOpen === true ? "Open" : "Closed"}
+                  </TagLabel>
+
+                  {poll.isOpen === true ? (
+                    <UnlockIcon display={{ base: "block", md: "none" }} />
+                  ) : (
+                    <LockIcon display={{ base: "block", md: "none" }} />
+                  )}
+                </Tag>
+              </>
+            }
+          >
             <Box>
-              {poll.pollResponses.length > 0 && (
-                <Alert status="warning" mb={3}>
-                  <AlertIcon />
-                  You have already voted in the poll.
-                </Alert>
-              )}
+              {user.data &&
+                poll.pollResponses.filter((pr) => {
+                  return (
+                    pr.username === user.data.username ||
+                    pr.sessionId === sessionStorage.getItem("sessionId")
+                  );
+                }).length > 0 && (
+                  <Alert status="warning" mb={3}>
+                    <AlertIcon />
+                    <Text fontSize={{ base: "sm", md: "md" }}>
+                      You have already voted in the poll, submitting will
+                      replace your current vote.
+                    </Text>
+                  </Alert>
+                )}
+
+              {!user.data &&
+                poll.pollResponses.filter((pr) => {
+                  return pr.sessionId === sessionStorage.getItem("sessionId");
+                }).length > 0 && (
+                  <Alert status="warning" mb={3}>
+                    <AlertIcon />
+                    You have already voted in the poll, submitting will replace
+                    your current vote.
+                  </Alert>
+                )}
               <form onSubmit={handleSubmit}>
                 <FormControl isRequired>
-                  <FormLabel>Select response</FormLabel>
+                  <FormLabel fontSize={{ base: "sm", md: "md" }}>
+                    Select response
+                  </FormLabel>
                   {poll.multipleAnswers ? (
                     <Stack spacing={3}>
                       <CheckboxGroup>
@@ -126,7 +220,7 @@ const PollResponder = () => {
                               handleMultipleResponse(question);
                             }}
                             key={question.id}
-                            size="lg"
+                            size={optionSize}
                             spacing={3}
                             value={question.question}
                           >
@@ -137,7 +231,7 @@ const PollResponder = () => {
                     </Stack>
                   ) : (
                     <RadioGroup name="form-poll">
-                      <Stack spacing={5}>
+                      <Stack spacing={3}>
                         {poll.pollQuestions.map((question) => (
                           <Radio
                             value={question.question}
@@ -153,30 +247,33 @@ const PollResponder = () => {
                     </RadioGroup>
                   )}
                 </FormControl>
-
-                <Stack mt={10} direction={{ base: "column", sm: "row" }}>
+                <Flex mt={5}>
                   <Button
-                    size="md"
+                    size={buttonSize}
                     colorScheme="gray"
                     variant="solid"
                     type="submit"
-                    width="full"
+                    width="auto"
                     isLoading={false}
                     loadingText="Creating"
                     disabled={isSubmitting}
                   >
                     Submit Response
                   </Button>
+
                   <Button
                     as={RouterLink}
                     to={`/polls/${pollSlug}/results`}
-                    size="md"
+                    size={buttonSize}
                     colorScheme="gray"
                     variant="outline"
+                    ml={2}
                   >
                     View Results
                   </Button>
-                </Stack>
+                  <Spacer />
+                  <PollSettings user={user} poll={poll} />
+                </Flex>
               </form>
             </Box>
           </PollBox>

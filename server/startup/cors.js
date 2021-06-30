@@ -8,7 +8,7 @@ module.exports = function (app) {
         `http://${process.env.APP_BASE_URL}`,
         `${process.env.APP_BASE_URL}`,
       ],
-      methods: ["GET", "POST", "PUT", "DELETE"],
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
       credentials: true, // enable set cookie
     })
   );

@@ -5,7 +5,7 @@ datasource db {
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["selectRelationCount", "orderByAggregateGroup"]
+  previewFeatures = ["selectRelationCount", "orderByAggregateGroup", "orderByRelation"]
 }
 
 model Poll {

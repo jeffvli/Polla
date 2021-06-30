@@ -2,3 +2,7 @@
 .chakra-checkbox__label {
   overflow: auto;
 }
+
+.chakra-modal__content {
+  background-color: #272c35 !important;
+}

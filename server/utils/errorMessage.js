@@ -2,7 +2,7 @@ const errorMessage = (code, message) => {
   return {
     error: {
       code: code,
-      message: message,
+      message: message.replaceAll("\n", ""),
     },
   };
 };

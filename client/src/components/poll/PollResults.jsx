@@ -10,24 +10,35 @@ import {
   SimpleGrid,
   Tooltip,
   Button,
+  Tag,
+  TagLabel,
+  TagLeftIcon,
 } from "@chakra-ui/react";
-import { ArrowBackIcon } from "@chakra-ui/icons";
-import _ from "lodash";
+import {
+  ArrowBackIcon,
+  UnlockIcon,
+  LockIcon,
+  ViewOffIcon,
+  ViewIcon,
+} from "@chakra-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
+import { nanoid } from "nanoid";
 
+import { usePoll, usePollResults } from "../../api/api";
+import MissingPage from "../missingpage/MissingPage";
 import PollBox from "./PollBox";
 import PollShare from "./PollShare";
-import { nanoid } from "nanoid";
-import { usePoll, usePollResults } from "../../api/api";
+import PollSettings from "./PollSettings";
 
 function PollResults({ user }) {
   const { pollSlug } = useParams();
-  const { poll } = usePoll(pollSlug);
+  const { poll, isError } = usePoll(pollSlug);
   const { pollResults } = usePollResults(pollSlug);
 
   return (
     <>
-      {!poll && !pollResults && (
+      {isError && <MissingPage />}
+      {!poll && !pollResults && !isError && (
         <Center>
           <Stack>
             <CircularProgress isIndeterminate color="blue.300" m="auto" />
@@ -35,16 +46,60 @@ function PollResults({ user }) {
           </Stack>
         </Center>
       )}
-      {poll && pollResults && (
+      {poll && pollResults && user && (
         <>
           <PollBox
             poll={poll}
             headerLeft={
               <Button as={RouterLink} to={`/polls/${pollSlug}/`} variant="link">
-                <Text fontSize="sm">
-                  <ArrowBackIcon /> Back to poll
+                <ArrowBackIcon />
+                <Text display={{ base: "none", md: "block" }} fontSize="sm">
+                  Back to poll
                 </Text>
               </Button>
+            }
+            headerRight={
+              <>
+                <Tag
+                  ml={1}
+                  size="sm"
+                  float="right"
+                  colorScheme={poll.isPrivate === true ? "red" : "green"}
+                >
+                  <TagLeftIcon
+                    display={{ base: "none", md: "block" }}
+                    as={poll.isPrivate === true ? ViewOffIcon : ViewIcon}
+                  />
+                  <TagLabel display={{ base: "none", md: "block" }}>
+                    {poll.isPrivate === true ? "Private" : "Public"}
+                  </TagLabel>
+
+                  {poll.isPrivate === true ? (
+                    <ViewOffIcon display={{ base: "block", md: "none" }} />
+                  ) : (
+                    <ViewIcon display={{ base: "block", md: "none" }} />
+                  )}
+                </Tag>
+                <Tag
+                  size="sm"
+                  float="right"
+                  colorScheme={poll.isOpen === true ? "green" : "red"}
+                >
+                  <TagLeftIcon
+                    display={{ base: "none", md: "block" }}
+                    as={poll.isOpen === true ? UnlockIcon : LockIcon}
+                  />
+                  <TagLabel display={{ base: "none", md: "block" }}>
+                    {poll.isOpen === true ? "Open" : "Closed"}
+                  </TagLabel>
+
+                  {poll.isOpen === true ? (
+                    <UnlockIcon display={{ base: "block", md: "none" }} />
+                  ) : (
+                    <LockIcon display={{ base: "block", md: "none" }} />
+                  )}
+                </Tag>
+              </>
             }
           >
             <Stack spacing={8}>
@@ -66,10 +121,11 @@ function PollResults({ user }) {
 
                     <Box>
                       <Text fontSize="sm" textAlign="end">
-                        {(
-                          (pollResults.results[question.id] /
-                            pollResults.results["totalResponses"]) *
-                          100
+                        {(pollResults.results[question.id]
+                          ? (pollResults.results[question.id] /
+                              pollResults.results["totalResponses"]) *
+                            100
+                          : 0
                         ).toFixed(1) +
                           `% (${
                             pollResults.results[question.id]
@@ -104,12 +160,17 @@ function PollResults({ user }) {
                     }
                     size="md"
                     value={
-                      (pollResults.results[question.id] * 100) /
-                      pollResults.results.totalResponses
+                      pollResults.results[question.id]
+                        ? (pollResults.results[question.id] * 100) /
+                          pollResults.results.totalResponses
+                        : 0
                     }
                   />
                 </Box>
               ))}
+            </Stack>
+            <Stack direction="row" justifyContent="flex-end" mt={5}>
+              <PollSettings user={user} poll={poll} />
             </Stack>
           </PollBox>
           <PollShare mt="2rem" mb="5rem" />

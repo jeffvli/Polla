@@ -9,7 +9,14 @@ const errorMessage = require("../../utils/errorMessage");
 
 // GET all polls
 router.get("/", checkAuthenticated, async (req, res) => {
-  const { username, search, skip, take } = req.query;
+  const { username, search, skip, take, sortBy, order } = req.query;
+  const filterOrder = {};
+  if (sortBy === "votes") {
+    filterOrder.pollResponses = { count: order };
+  } else {
+    filterOrder[sortBy] = order;
+  }
+
   const filter = {
     AND: [
       {
@@ -66,9 +73,7 @@ router.get("/", checkAuthenticated, async (req, res) => {
           },
         },
       },
-      orderBy: {
-        createdAt: "desc",
-      },
+      orderBy: filterOrder,
     });
 
     const pollCount = await prisma.poll.count({
@@ -379,7 +384,128 @@ router.post("/:slug/responses", checkAuthenticated, async (req, res) => {
 
     res.json(responseData);
   } catch (err) {
-    console.log(err);
+    res.status(500).json(errorMessage(500, `${err}`));
+  }
+});
+
+router.patch("/:slug/isPrivate", checkAuthenticated, async (req, res) => {
+  const { slug } = req.params;
+
+  if (!req.authenticated) {
+    return res.sendStatus(403);
+  }
+
+  try {
+    const selectedPoll = await prisma.poll.findUnique({
+      where: {
+        slug: slug,
+      },
+    });
+
+    if (!selectedPoll) {
+      return res.sendStatus(404);
+    }
+
+    if (selectedPoll.username !== req.user.username) {
+      return res.sendStatus(403);
+    }
+
+    const updatedPoll = await prisma.poll.update({
+      where: {
+        slug: slug,
+      },
+      data: {
+        isPrivate: selectedPoll.isPrivate ? false : true,
+      },
+    });
+
+    res.json(updatedPoll);
+  } catch (err) {
+    res.status(500).json(errorMessage(500, `${err}`));
+  }
+});
+
+router.patch("/:slug/isOpen", checkAuthenticated, async (req, res) => {
+  const { slug } = req.params;
+
+  if (!req.authenticated) {
+    return res.sendStatus(403);
+  }
+
+  try {
+    const selectedPoll = await prisma.poll.findUnique({
+      where: {
+        slug: slug,
+      },
+    });
+
+    if (!selectedPoll) {
+      return res.sendStatus(404);
+    }
+
+    if (selectedPoll.username !== req.user.username) {
+      return res.sendStatus(403);
+    }
+
+    const updatedPoll = await prisma.poll.update({
+      where: {
+        slug: slug,
+      },
+      data: {
+        isOpen: selectedPoll.isOpen ? false : true,
+      },
+    });
+
+    res.json(updatedPoll);
+  } catch (err) {
+    res.status(500).json(errorMessage(500, `${err}`));
+  }
+});
+
+router.delete("/:slug", checkAuthenticated, async (req, res) => {
+  const { slug } = req.params;
+
+  if (!req.authenticated) {
+    return res.sendStatus(403);
+  }
+
+  try {
+    const selectedPoll = await prisma.poll.findUnique({
+      where: {
+        slug: slug,
+      },
+    });
+
+    if (!selectedPoll) {
+      return res.sendStatus(404);
+    }
+
+    if (selectedPoll.username !== req.user.username) {
+      return res.sendStatus(403);
+    }
+
+    const deleteResponses = prisma.pollResponse.deleteMany({
+      where: {
+        pollId: selectedPoll.id,
+      },
+    });
+
+    const deleteQuestions = prisma.pollQuestion.deleteMany({
+      where: {
+        pollId: selectedPoll.id,
+      },
+    });
+
+    const deletePoll = prisma.poll.delete({
+      where: {
+        slug: slug,
+      },
+    });
+
+    await prisma.$transaction([deleteResponses, deleteQuestions, deletePoll]);
+
+    res.sendStatus(204);
+  } catch (err) {
     res.status(500).json(errorMessage(500, `${err}`));
   }
 });

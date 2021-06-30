@@ -142,6 +142,7 @@ const PollCreator = ({ mb }) => {
           <FormControl id="poll-title" isRequired>
             <FormLabel>Poll Title</FormLabel>
             <Input
+              autoFocus
               size="lg"
               maxLength={128}
               placeholder="Enter a title..."

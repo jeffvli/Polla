@@ -3,16 +3,14 @@ import {
   Flex,
   Spacer,
   Box,
-  Text,
   Stack,
   Button,
-  Link,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
-  Avatar,
 } from "@chakra-ui/react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import { useHistory } from "react-router-dom";
 
 import "./Navbar.css";
@@ -20,50 +18,48 @@ import { api } from "../../api/api";
 
 const Navbar = ({ user }) => {
   const history = useHistory();
+  console.log(user);
 
   return (
     <nav>
       <Flex backgroundColor="#12161E">
-        <Link
-          as={RouterLink}
-          to="/"
-          className="navbar-brand"
-          fontSize="24"
-          pl="2"
-          color="white"
-        >
-          <Text fontSize="2xl">Polla</Text>
-        </Link>
+        <a href="/" className="title" id="title">
+          Polla
+        </a>
         <Spacer />
-        <Box mt="auto" mb="auto" pr={2}>
-          <Stack direction="row">
-            {user.isAuthenticated && user !== undefined ? (
-              <>
-                <Menu backgroundColor="aliceblue">
-                  <MenuButton>{user.data.username}</MenuButton>
-                  <MenuList>
-                    <MenuItem
-                      onClick={() => {
-                        history.push(`/profile/${user.data.username}`);
-                      }}
-                    >
-                      View Profile
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        api.delete("/auth/logout").then(() => {
-                          localStorage.removeItem("token");
-                          localStorage.removeItem("refreshToken");
-                          window.location.reload();
-                        });
-                      }}
-                    >
-                      Logout
-                    </MenuItem>
-                  </MenuList>
-                </Menu>
-              </>
-            ) : (
+        {user.isAuthenticated && user.data ? (
+          <Menu isLazy>
+            <MenuButton
+              as={Button}
+              rightIcon={<ChevronDownIcon />}
+              variant="ghost"
+            >
+              {user.data.username}
+            </MenuButton>
+            <MenuList>
+              <MenuItem
+                onClick={() => {
+                  history.push(`/profile/${user.data.username}`);
+                }}
+              >
+                View Profile
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  api.delete("/auth/logout").then(() => {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("refreshToken");
+                    window.location.reload();
+                  });
+                }}
+              >
+                Logout
+              </MenuItem>
+            </MenuList>
+          </Menu>
+        ) : (
+          <Box mt="auto" mb="auto" pr={3}>
+            <Stack direction="row">
               <>
                 <Button
                   as={RouterLink}
@@ -87,9 +83,9 @@ const Navbar = ({ user }) => {
                   Register
                 </Button>
               </>
-            )}
-          </Stack>
-        </Box>
+            </Stack>
+          </Box>
+        )}
       </Flex>
     </nav>
   );

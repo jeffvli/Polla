@@ -124,10 +124,18 @@ export const useProfile = (username, token) => {
   };
 };
 
-export const useProfilePolls = (username, search, skip, take, token) => {
+export const useProfilePolls = (
+  username,
+  search,
+  skip,
+  take,
+  sortBy,
+  order,
+  token
+) => {
   const { data, error } = useSWR(
     [
-      `/polls/?username=${username}&search=${search}&take=${take}&skip=${skip}`,
+      `/polls/?username=${username}&search=${search}&take=${take}&skip=${skip}&sortBy=${sortBy}&order=${order}`,
       token,
     ],
     authFetcher,

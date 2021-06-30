@@ -19,8 +19,10 @@ import {
   InputLeftElement,
   Input,
   Link,
+  Stack,
 } from "@chakra-ui/react";
 import { SearchIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { FaSort } from "react-icons/fa";
 import { Link as RouterLink } from "react-router-dom";
 import { nanoid } from "nanoid";
 
@@ -30,17 +32,25 @@ const PollList = ({ username }) => {
   const [pollSearch, setPollSearch] = useState("");
   const [skip, setSkip] = useState(0);
   const [take, setTake] = useState(15);
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [order, setOrder] = useState("desc");
   const { polls } = useProfilePolls(
     username,
     pollSearch,
     skip,
     take,
+    sortBy,
+    order,
     localStorage.getItem("token")
   );
 
   const handleSearch = (e) => {
     if (e.key === "Enter") {
       setPollSearch(e.target.value);
+    }
+
+    if (e.key === "Backspace" && e.target.value.length <= 1) {
+      setPollSearch("");
     }
   };
 
@@ -53,6 +63,16 @@ const PollList = ({ username }) => {
       setSkip(skip - 15);
     } else {
       setSkip(0);
+    }
+  };
+
+  const handleSort = (sort) => {
+    if (sort !== sortBy) {
+      setSortBy(sort);
+      setOrder("desc");
+    } else {
+      setSortBy(sort);
+      order === "desc" ? setOrder("asc") : setOrder("desc");
     }
   };
 
@@ -81,14 +101,54 @@ const PollList = ({ username }) => {
             <Table size="sm" variant="simple" mt={5}>
               <Thead>
                 <Tr>
-                  <Th>Title</Th>
-                  <Th>Created</Th>
-                  <Th textAlign="center">Status</Th>
-                  <Th
-                    display={{ base: "none", md: "block" }}
-                    textAlign="center"
-                  >
-                    Votes
+                  <Th>
+                    <Link _hover="none">
+                      <Text
+                        display="flex"
+                        alignItems="center"
+                        onClick={() => {
+                          handleSort("title");
+                        }}
+                      >
+                        Title <FaSort />
+                      </Text>
+                    </Link>
+                  </Th>
+                  <Th>
+                    <Link
+                      _hover="none"
+                      onClick={() => {
+                        handleSort("createdAt");
+                      }}
+                    >
+                      <Text display="flex" alignItems="center">
+                        Created <FaSort />
+                      </Text>
+                    </Link>
+                  </Th>
+                  <Th textAlign="center">
+                    <Link
+                      _hover="none"
+                      onClick={() => {
+                        handleSort("isOpen");
+                      }}
+                    >
+                      <Text display="flex" alignItems="center">
+                        Status <FaSort />
+                      </Text>
+                    </Link>
+                  </Th>
+                  <Th display={{ base: "none", md: "block" }}>
+                    <Link
+                      _hover="none"
+                      onClick={() => {
+                        handleSort("votes");
+                      }}
+                    >
+                      <Text display="flex" alignItems="center">
+                        Votes <FaSort />
+                      </Text>
+                    </Link>
                   </Th>
                 </Tr>
               </Thead>
@@ -116,15 +176,12 @@ const PollList = ({ username }) => {
                       </Link>
                     </Td>
                     <Td>{poll.createdAt}</Td>
-                    <Td textAlign="center">
+                    <Td>
                       <Badge colorScheme={poll.isOpen ? "green" : "red"}>
                         {poll.isOpen ? "Open" : "Closed"}
                       </Badge>
                     </Td>
-                    <Td
-                      display={{ base: "none", md: "block" }}
-                      textAlign="center"
-                    >
+                    <Td display={{ base: "none", md: "block" }}>
                       <Tag colorScheme="blue">
                         {poll._count.pollResponses} votes
                       </Tag>
@@ -137,32 +194,50 @@ const PollList = ({ username }) => {
         )}
       </Box>
       {polls && (
-        <Flex
-          alignSelf="flex-end"
-          alignItems="flex-end"
-          justifyContent="flex-end"
-        >
-          <ButtonGroup mt={3}>
-            <Button
-              variant="outline"
-              width="7rem"
-              size="sm"
-              onClick={handlePrevious}
-              disabled={skip === 0}
+        <>
+          <Stack>
+            <Flex
+              alignSelf="flex-end"
+              alignItems="flex-end"
+              justifyContent="flex-end"
             >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              width="7rem"
-              size="sm"
-              onClick={handleNext}
-              disabled={skip + 15 >= polls.count}
+              <ButtonGroup mt={3}>
+                <Button
+                  variant="outline"
+                  width="7rem"
+                  size="sm"
+                  onClick={handlePrevious}
+                  disabled={skip === 0}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  width="7rem"
+                  size="sm"
+                  onClick={handleNext}
+                  disabled={skip + 15 >= polls.count}
+                >
+                  Next
+                </Button>
+              </ButtonGroup>
+            </Flex>
+            <Flex
+              alignSelf="flex-end"
+              alignItems="flex-end"
+              justifyContent="flex-end"
             >
-              Next
-            </Button>
-          </ButtonGroup>
-        </Flex>
+              <Box>
+                <Text>
+                  {`${skip + 1} - ${
+                    skip + 14 > polls.count ? polls.count : skip + 15
+                  }`}{" "}
+                  of {polls.count}
+                </Text>
+              </Box>
+            </Flex>
+          </Stack>
+        </>
       )}
     </>
   );

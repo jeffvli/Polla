@@ -25,7 +25,9 @@ const PollBox = ({ poll, children, headerLeft, headerCenter, headerRight }) => {
             </SimpleGrid>
             <Box pb={10}>
               <Box textAlign="center">
-                <Heading fontSize="3xl">{poll.title}</Heading>
+                <Heading fontSize={{ base: "xl", md: "3xl" }}>
+                  {poll.title}
+                </Heading>
               </Box>
               {poll.description && (
                 <Box textAlign="center">
@@ -38,8 +40,12 @@ const PollBox = ({ poll, children, headerLeft, headerCenter, headerRight }) => {
             {children}
             <Divider mt={5} mb={5} />
             <Box mt={5} color="#5C626E">
-              <Text>
-                {"Created → "}
+              <Text fontSize={{ base: "sm", md: "md" }}>
+                {`${
+                  poll.dupCheckMode === "session"
+                    ? "Session-based checking"
+                    : "IP-based checking"
+                } → `}
                 {formatDistance(new Date(poll.createdAt), new Date(), {
                   addSuffix: true,
                 })}

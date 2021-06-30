@@ -109,6 +109,7 @@ router.get("/profile", checkAuthenticated, async (req, res) => {
           orderBy: {
             createdAt: "desc",
           },
+          distinct: ["pollId"],
         },
       },
     });
