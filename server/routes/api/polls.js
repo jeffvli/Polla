@@ -6,12 +6,79 @@ const prisma = require("../../utils/initPrisma");
 const checkAuthenticated = require("../../middleware/checkAuthenticated");
 const randomString = require("../../utils/randomString");
 const errorMessage = require("../../utils/errorMessage");
-const { poll } = require("../../utils/initPrisma");
 
 // GET all polls
-router.get("/", async (req, res) => {
-  const polls = await prisma.poll.findMany();
-  res.json(polls);
+router.get("/", checkAuthenticated, async (req, res) => {
+  const { username, search, skip, take } = req.query;
+  const filter = {
+    AND: [
+      {
+        username: {
+          equals: username,
+        },
+      },
+      {
+        AND: [
+          {
+            OR: [
+              {
+                username: {
+                  equals: search,
+                  mode: "insensitive",
+                },
+              },
+              {
+                title: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        isPrivate:
+          req.authenticated && req.user.username === username ? void 0 : false,
+      },
+    ],
+  };
+
+  try {
+    const polls = await prisma.poll.findMany({
+      skip: Number(skip) || void 0,
+      take: Number(take) || void 0,
+      where: filter,
+      select: {
+        title: true,
+        description: true,
+        createdAt: true,
+        isOpen: true,
+        isPrivate: true,
+        multipleAnswers: true,
+        slug: true,
+        username: true,
+        dupCheckMode: true,
+        _count: {
+          select: {
+            pollQuestions: true,
+            pollResponses: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    const pollCount = await prisma.poll.count({
+      where: filter,
+    });
+
+    res.json({ count: pollCount, data: polls });
+  } catch (err) {
+    res.status(500).json(errorMessage(500, `${err}`));
+  }
 });
 
 // Get a specific poll with questions
@@ -149,10 +216,6 @@ router.post("/", checkAuthenticated, async (req, res) => {
     dupCheckMode,
   } = req.body;
 
-  if (!req.authenticated && req.headers.authorization) {
-    return res.status(401).json(errorMessage(401, "Invalid authorization."));
-  }
-
   try {
     const questionData = questions
       ? _.uniqBy(questions, "question").map((question) => {
@@ -200,10 +263,6 @@ router.post("/", checkAuthenticated, async (req, res) => {
 // POST responses to a specific poll
 router.post("/:slug/responses", checkAuthenticated, async (req, res) => {
   const { slug } = req.params;
-
-  if (!req.authenticated && req.headers.authorization) {
-    return res.sendStatus(401);
-  }
 
   if (
     (req.body.length > 1 && !req.body[0].sessionId) ||

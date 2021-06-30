@@ -30,14 +30,17 @@ export const api = axios.create({
 createAuthRefreshInterceptor(api, refreshAuthLogic);
 
 export const fetcher = (url) => api.get(url).then((res) => res.data);
-export const authFetcher = (url, token) =>
-  api
-    .get(url, {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    })
-    .then((res) => res.data);
+export const authFetcher = async (url, token) => {
+  const headers = token ? { Authorization: "Bearer " + token } : void 0;
+
+  const response = await api.get(url, {
+    headers: headers,
+  });
+
+  const data = await response.data;
+
+  return data;
+};
 
 export const usePolls = () => {
   const { data, error } = useSWR("/polls/", fetcher, {
@@ -100,6 +103,42 @@ export const useUser = (token) => {
 
   return {
     user: { isAuthenticated: !error, data: data },
+    isLoading: !error && !data,
+    isError: error,
+  };
+};
+
+export const useProfile = (username, token) => {
+  const { data, error } = useSWR(
+    [`/users/profile/?username=${username}`, token],
+    authFetcher,
+    {
+      revalidateOnFocus: false,
+    }
+  );
+
+  return {
+    profile: data,
+    isLoading: !error && !data,
+    isError: error,
+  };
+};
+
+export const useProfilePolls = (username, search, skip, take, token) => {
+  const { data, error } = useSWR(
+    [
+      `/polls/?username=${username}&search=${search}&take=${take}&skip=${skip}`,
+      token,
+    ],
+    authFetcher,
+    {
+      revalidateOnFocus: false,
+      shouldRetryOnError: false,
+    }
+  );
+
+  return {
+    polls: data,
     isLoading: !error && !data,
     isError: error,
   };

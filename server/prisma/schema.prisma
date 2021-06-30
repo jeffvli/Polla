@@ -4,7 +4,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["selectRelationCount", "orderByAggregateGroup"]
 }
 
 model Poll {
@@ -43,12 +44,22 @@ model PollResponse {
   user           User?        @relation(fields: [username], references: [username])
   username       String?      @db.VarChar(20)
   sessionId      String?      @db.VarChar(24)
+  createdAt      DateTime     @default(now())
 }
 
 model User {
   id            Int            @id @default(autoincrement())
+  email         String?        @unique
+  role          Role           @default(USER)
   username      String         @unique @db.VarChar(20)
   password      String         @db.VarChar
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   polls         Poll[]
   pollResponses PollResponse[]
+}
+
+enum Role {
+  USER
+  ADMIN
 }

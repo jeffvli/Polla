@@ -7,14 +7,14 @@ import Footer from "./footer/Footer";
 import PollCreator from "./poll/PollCreator";
 import PollResponder from "./poll/PollResponder";
 import MissingPage from "./missingpage/MissingPage";
-import PollShare from "./poll/PollShare";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
 import PollResults from "./poll/PollResults";
 import { useUser } from "../api/api";
+import Profile from "./profile/Profile";
 
 function App() {
-  const { user, isLoading, isError } = useUser(localStorage.getItem("token"));
+  const { user } = useUser(localStorage.getItem("token"));
 
   if (!sessionStorage.getItem("sessionId")) {
     sessionStorage.setItem("sessionId", Randomstring.generate(24));
@@ -23,7 +23,7 @@ function App() {
   return (
     <>
       <Router>
-        {user && !isLoading && (
+        {user && (
           <>
             <Navbar user={user} />
             <Switch>
@@ -33,11 +33,14 @@ function App() {
               <Route path="/login">
                 <Login user={user} />
               </Route>
+              <Route path="/profile/:username">
+                <Profile user={user} />
+              </Route>
               <Route path="/polls/:pollSlug/results">
                 <PollResults user={user} />
               </Route>
               <Route path="/polls/:pollSlug">
-                <PollResponder />
+                <PollResponder user={user} />
               </Route>
               <Route exact path="/">
                 <PollCreator user={user} mb="5rem" />
