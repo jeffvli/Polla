@@ -223,6 +223,7 @@ const Register = () => {
               <Input
                 autoFocus
                 autoComplete="username"
+                id="regUsername"
                 size="lg"
                 maxLength="20"
                 onChange={handleUsername}
@@ -253,6 +254,7 @@ const Register = () => {
                 <InputGroup>
                   <Input
                     autoComplete="new-password"
+                    id="regPassword"
                     size="lg"
                     maxLength="64"
                     type="password"
@@ -265,6 +267,7 @@ const Register = () => {
                 <InputGroup>
                   <Input
                     autoComplete="new-password"
+                    id="regPasswordRepeat"
                     size="lg"
                     maxLength="64"
                     type="password"
