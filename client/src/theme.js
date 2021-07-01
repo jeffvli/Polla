@@ -11,6 +11,10 @@ const breakpoints = createBreakpoints({
 });
 
 const theme = extendTheme({
+  fonts: {
+    heading: "Barlow",
+    body: "Inter, Montserrat, sans-serif",
+  },
   config: {
     initialColorMode: "dark",
   },
