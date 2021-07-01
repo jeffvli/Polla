@@ -15,7 +15,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import { api } from "../../api/api";
 
-const Login = ({ user }) => {
+const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,11 +30,11 @@ const Login = ({ user }) => {
         username: username,
         password: password,
       })
-      .then((res) => {
+      .then(async (res) => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("refreshToken", res.data.refreshToken);
         setIsSubmitting(false);
-        window.location.replace(`${process.env.REACT_APP_BASE_URL}`);
+        window.location.replace("/");
       })
       .catch((err) => {
         let errMessage;

@@ -14,7 +14,7 @@ const refreshAuthLogic = async (failedRequest) => {
       return Promise.resolve();
     })
     .catch((err) => {
-      console.log(err);
+      //console.log(err);
     });
 };
 
@@ -55,7 +55,7 @@ export const usePolls = () => {
 };
 
 export const usePollAuth = (slug, sessionId, token) => {
-  const { data, error } = useSWR(
+  const { data, mutate, error } = useSWR(
     [`/polls/${slug}/?sessionId=${sessionId}`, token],
     authFetcher,
     {
@@ -67,6 +67,7 @@ export const usePollAuth = (slug, sessionId, token) => {
     poll: data,
     isLoading: !error && !data,
     isError: error,
+    mutate,
   };
 };
 
@@ -96,15 +97,20 @@ export const usePollResults = (slug) => {
 };
 
 export const useUser = (token) => {
-  const { data, error } = useSWR(["/auth/user", token], authFetcher, {
-    revalidateOnFocus: false,
-    shouldRetryOnError: false,
-  });
+  const { data, mutate, error } = useSWR(
+    token ? ["/auth/user", token] : null,
+    authFetcher,
+    {
+      revalidateOnFocus: false,
+      shouldRetryOnError: false,
+    }
+  );
 
   return {
-    user: { isAuthenticated: !error, data: data },
+    user: data,
     isLoading: !error && !data,
     isError: error,
+    mutate,
   };
 };
 
@@ -114,6 +120,7 @@ export const useProfile = (username, token) => {
     authFetcher,
     {
       revalidateOnFocus: false,
+      shouldRetryOnError: false,
     }
   );
 

@@ -23,35 +23,33 @@ function App() {
   return (
     <>
       <Router>
-        {user && (
-          <>
-            <Navbar user={user} />
-            <Switch>
-              <Route path="/register">
-                <Register />
-              </Route>
-              <Route path="/login">
-                <Login user={user} />
-              </Route>
-              <Route path="/profile/:username">
-                <Profile user={user} />
-              </Route>
-              <Route path="/polls/:pollSlug/results">
-                <PollResults user={user} />
-              </Route>
-              <Route path="/polls/:pollSlug">
-                <PollResponder user={user} />
-              </Route>
-              <Route exact path="/">
-                <PollCreator user={user} mb="5rem" />
-              </Route>
-              <Route path="*">
-                <MissingPage />
-              </Route>
-            </Switch>
-            <Footer />
-          </>
-        )}
+        <>
+          <Navbar user={user} />
+          <Switch>
+            <Route path="/register">
+              <Register />
+            </Route>
+            <Route path="/login">
+              <Login />
+            </Route>
+            <Route path="/profile/:username">
+              <Profile />
+            </Route>
+            <Route path="/polls/:pollSlug/results">
+              <PollResults user={user} />
+            </Route>
+            <Route path="/polls/:pollSlug">
+              <PollResponder user={user} />
+            </Route>
+            <Route exact path="/">
+              <PollCreator mb="5rem" />
+            </Route>
+            <Route path="*">
+              <MissingPage />
+            </Route>
+          </Switch>
+          <Footer />
+        </>
       </Router>
     </>
   );

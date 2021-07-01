@@ -102,21 +102,20 @@ const PollList = ({ username }) => {
               <Thead>
                 <Tr>
                   <Th>
-                    <Link _hover="none">
-                      <Text
-                        display="flex"
-                        alignItems="center"
-                        onClick={() => {
-                          handleSort("title");
-                        }}
-                      >
+                    <Link
+                      color={sortBy === "title" ? "#AADBFF" : void 0}
+                      onClick={() => {
+                        handleSort("title");
+                      }}
+                    >
+                      <Text display="flex" alignItems="center">
                         Title <FaSort />
                       </Text>
                     </Link>
                   </Th>
                   <Th>
                     <Link
-                      _hover="none"
+                      color={sortBy === "createdAt" ? "#AADBFF" : void 0}
                       onClick={() => {
                         handleSort("createdAt");
                       }}
@@ -128,7 +127,7 @@ const PollList = ({ username }) => {
                   </Th>
                   <Th textAlign="center">
                     <Link
-                      _hover="none"
+                      color={sortBy === "isOpen" ? "#AADBFF" : void 0}
                       onClick={() => {
                         handleSort("isOpen");
                       }}
@@ -140,7 +139,7 @@ const PollList = ({ username }) => {
                   </Th>
                   <Th display={{ base: "none", md: "block" }}>
                     <Link
-                      _hover="none"
+                      color={sortBy === "votes" ? "#AADBFF" : void 0}
                       onClick={() => {
                         handleSort("votes");
                       }}
@@ -160,7 +159,6 @@ const PollList = ({ username }) => {
                         as={RouterLink}
                         to={`/polls/${poll.slug}`}
                         variant="link"
-                        _hover="none"
                       >
                         <Text
                           isTruncated

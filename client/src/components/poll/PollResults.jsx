@@ -10,17 +10,8 @@ import {
   SimpleGrid,
   Tooltip,
   Button,
-  Tag,
-  TagLabel,
-  TagLeftIcon,
 } from "@chakra-ui/react";
-import {
-  ArrowBackIcon,
-  UnlockIcon,
-  LockIcon,
-  ViewOffIcon,
-  ViewIcon,
-} from "@chakra-ui/icons";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
 import { nanoid } from "nanoid";
 
@@ -29,6 +20,7 @@ import MissingPage from "../missingpage/MissingPage";
 import PollBox from "./PollBox";
 import PollShare from "./PollShare";
 import PollSettings from "./PollSettings";
+import PollTags from "./PollTags";
 
 function PollResults({ user }) {
   const { pollSlug } = useParams();
@@ -46,7 +38,8 @@ function PollResults({ user }) {
           </Stack>
         </Center>
       )}
-      {poll && pollResults && user && (
+
+      {poll && pollResults && (
         <>
           <PollBox
             poll={poll}
@@ -58,49 +51,7 @@ function PollResults({ user }) {
                 </Text>
               </Button>
             }
-            headerRight={
-              <>
-                <Tag
-                  ml={1}
-                  size="sm"
-                  float="right"
-                  colorScheme={poll.isPrivate === true ? "red" : "green"}
-                >
-                  <TagLeftIcon
-                    display={{ base: "none", md: "block" }}
-                    as={poll.isPrivate === true ? ViewOffIcon : ViewIcon}
-                  />
-                  <TagLabel display={{ base: "none", md: "block" }}>
-                    {poll.isPrivate === true ? "Private" : "Public"}
-                  </TagLabel>
-
-                  {poll.isPrivate === true ? (
-                    <ViewOffIcon display={{ base: "block", md: "none" }} />
-                  ) : (
-                    <ViewIcon display={{ base: "block", md: "none" }} />
-                  )}
-                </Tag>
-                <Tag
-                  size="sm"
-                  float="right"
-                  colorScheme={poll.isOpen === true ? "green" : "red"}
-                >
-                  <TagLeftIcon
-                    display={{ base: "none", md: "block" }}
-                    as={poll.isOpen === true ? UnlockIcon : LockIcon}
-                  />
-                  <TagLabel display={{ base: "none", md: "block" }}>
-                    {poll.isOpen === true ? "Open" : "Closed"}
-                  </TagLabel>
-
-                  {poll.isOpen === true ? (
-                    <UnlockIcon display={{ base: "block", md: "none" }} />
-                  ) : (
-                    <LockIcon display={{ base: "block", md: "none" }} />
-                  )}
-                </Tag>
-              </>
-            }
+            headerRight={<PollTags slug={pollSlug} />}
           >
             <Stack spacing={8}>
               {poll.pollQuestions.map((question) => (
@@ -139,9 +90,9 @@ function PollResults({ user }) {
                     colorScheme={
                       pollResults.responses.find((response) => {
                         if (question.id === response.pollQuestionId) {
-                          if (user.isAuthenticated) {
+                          if (user) {
                             const userMatch =
-                              response.username === user.data.username;
+                              response.username === user.username;
                             return (
                               response.sessionId ===
                                 sessionStorage.getItem("sessionId") || userMatch
@@ -169,9 +120,11 @@ function PollResults({ user }) {
                 </Box>
               ))}
             </Stack>
-            <Stack direction="row" justifyContent="flex-end" mt={5}>
-              <PollSettings user={user} poll={poll} />
-            </Stack>
+            {user && user.username === poll.username && (
+              <Stack direction="row" justifyContent="flex-end" mt={5}>
+                <PollSettings user={user} slug={pollSlug} />
+              </Stack>
+            )}
           </PollBox>
           <PollShare mt="2rem" mb="5rem" />
         </>

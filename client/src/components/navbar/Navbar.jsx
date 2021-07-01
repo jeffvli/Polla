@@ -18,7 +18,6 @@ import { api } from "../../api/api";
 
 const Navbar = ({ user }) => {
   const history = useHistory();
-  console.log(user);
 
   return (
     <nav>
@@ -27,19 +26,19 @@ const Navbar = ({ user }) => {
           Polla
         </a>
         <Spacer />
-        {user.isAuthenticated && user.data ? (
+        {user ? (
           <Menu isLazy>
             <MenuButton
               as={Button}
               rightIcon={<ChevronDownIcon />}
               variant="ghost"
             >
-              {user.data.username}
+              {user.username}
             </MenuButton>
             <MenuList>
               <MenuItem
                 onClick={() => {
-                  history.push(`/profile/${user.data.username}`);
+                  history.push(`/profile/${user.username}`);
                 }}
               >
                 View Profile

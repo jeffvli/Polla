@@ -120,7 +120,6 @@ router.get("/profile", checkAuthenticated, async (req, res) => {
 
     res.json(polls);
   } catch (err) {
-    console.log(err);
     res.status(500).send(errorMessage(500, err));
   }
 });

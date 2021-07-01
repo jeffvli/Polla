@@ -76,7 +76,6 @@ router.post(
 
     redisClient.SET(req.user.id, refreshToken, "EX", 2592000, (err, reply) => {
       if (err) {
-        console.log(err.message);
         res.sendStatus(500);
       }
     });
@@ -107,7 +106,6 @@ router.post("/token", (req, res) => {
 
     redisClient.GET(user.id, (err, result) => {
       if (err) {
-        console.log(err.message);
         return res.sendStatus(500);
       }
 

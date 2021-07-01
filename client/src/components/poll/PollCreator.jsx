@@ -91,12 +91,12 @@ const PollCreator = ({ mb }) => {
             status: "success",
             duration: 2000,
           });
+          setIsSubmitting(false);
           setSuccessResponse({
             id: res.data.id,
             slug: res.data.slug,
             status: true,
           });
-          setIsSubmitting(false);
         })
         .catch((err) => {
           if (err.response.status === 401) {

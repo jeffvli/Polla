@@ -26,10 +26,15 @@ import {
 } from "@chakra-ui/icons";
 
 import "./Poll.css";
-import { api } from "../../api/api";
+import { api, usePollAuth } from "../../api/api";
 import { useHistory } from "react-router-dom";
 
-const PollSettings = ({ user, poll }) => {
+const PollSettings = ({ user, slug }) => {
+  const { poll, mutate } = usePollAuth(
+    slug,
+    sessionStorage.getItem("sessionId"),
+    localStorage.getItem("token")
+  );
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef();
@@ -87,7 +92,7 @@ const PollSettings = ({ user, poll }) => {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
-      {user.data && user.data.username === poll.username && (
+      {user && poll && user.username === poll.username && (
         <Menu isLazy>
           <MenuButton
             as={IconButton}
@@ -104,7 +109,8 @@ const PollSettings = ({ user, poll }) => {
                 api
                   .patch(`/polls/${poll.slug}/isOpen`)
                   .then(() => {
-                    window.location.reload();
+                    mutate();
+                    //window.location.reload();
                   })
                   .catch((err) => {
                     console.error(err.message);
@@ -119,7 +125,8 @@ const PollSettings = ({ user, poll }) => {
                 api
                   .patch(`/polls/${poll.slug}/isPrivate`)
                   .then(() => {
-                    window.location.reload();
+                    mutate();
+                    //window.location.reload();
                   })
                   .catch((err) => {
                     console.error(err.message);

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, Container, Box, Text } from "@chakra-ui/layout";
+import { Link, Box, Text } from "@chakra-ui/layout";
 import { Link as RouterLink } from "react-router-dom";
 
 const MissingPage = () => {

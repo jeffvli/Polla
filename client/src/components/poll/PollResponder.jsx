@@ -12,20 +12,11 @@ import {
   useToast,
   Alert,
   Text,
-  Tag,
-  TagLabel,
-  TagLeftIcon,
   Flex,
   Spacer,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import {
-  ArrowBackIcon,
-  UnlockIcon,
-  LockIcon,
-  ViewIcon,
-  ViewOffIcon,
-} from "@chakra-ui/icons";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import { AlertIcon } from "@chakra-ui/alert";
 import { useParams, useHistory, Link as RouterLink } from "react-router-dom";
 
@@ -35,6 +26,7 @@ import PollBox from "./PollBox";
 import { api, usePollAuth } from "../../api/api";
 import produce from "immer";
 import PollSettings from "./PollSettings";
+import PollTags from "./PollTags";
 
 const PollResponder = ({ user }) => {
   const { pollSlug } = useParams();
@@ -123,7 +115,7 @@ const PollResponder = ({ user }) => {
   return (
     <>
       {isError && <MissingPage />}
-      {poll && user && (
+      {poll && (
         <>
           <PollBox
             poll={poll}
@@ -135,55 +127,13 @@ const PollResponder = ({ user }) => {
                 </Text>
               </Button>
             }
-            headerRight={
-              <>
-                <Tag
-                  ml={1}
-                  size="sm"
-                  float="right"
-                  colorScheme={poll.isPrivate === true ? "red" : "green"}
-                >
-                  <TagLeftIcon
-                    display={{ base: "none", md: "block" }}
-                    as={poll.isPrivate === true ? ViewOffIcon : ViewIcon}
-                  />
-                  <TagLabel display={{ base: "none", md: "block" }}>
-                    {poll.isPrivate === true ? "Private" : "Public"}
-                  </TagLabel>
-
-                  {poll.isPrivate === true ? (
-                    <ViewOffIcon display={{ base: "block", md: "none" }} />
-                  ) : (
-                    <ViewIcon display={{ base: "block", md: "none" }} />
-                  )}
-                </Tag>
-                <Tag
-                  size="sm"
-                  float="right"
-                  colorScheme={poll.isOpen === true ? "green" : "red"}
-                >
-                  <TagLeftIcon
-                    display={{ base: "none", md: "block" }}
-                    as={poll.isOpen === true ? UnlockIcon : LockIcon}
-                  />
-                  <TagLabel display={{ base: "none", md: "block" }}>
-                    {poll.isOpen === true ? "Open" : "Closed"}
-                  </TagLabel>
-
-                  {poll.isOpen === true ? (
-                    <UnlockIcon display={{ base: "block", md: "none" }} />
-                  ) : (
-                    <LockIcon display={{ base: "block", md: "none" }} />
-                  )}
-                </Tag>
-              </>
-            }
+            headerRight={<PollTags slug={pollSlug} />}
           >
             <Box>
-              {user.data &&
+              {user &&
                 poll.pollResponses.filter((pr) => {
                   return (
-                    pr.username === user.data.username ||
+                    pr.username === user.username ||
                     pr.sessionId === sessionStorage.getItem("sessionId")
                   );
                 }).length > 0 && (
@@ -196,7 +146,7 @@ const PollResponder = ({ user }) => {
                   </Alert>
                 )}
 
-              {!user.data &&
+              {!user &&
                 poll.pollResponses.filter((pr) => {
                   return pr.sessionId === sessionStorage.getItem("sessionId");
                 }).length > 0 && (
@@ -272,7 +222,7 @@ const PollResponder = ({ user }) => {
                     View Results
                   </Button>
                   <Spacer />
-                  <PollSettings user={user} poll={poll} />
+                  <PollSettings user={user} slug={pollSlug} />
                 </Flex>
               </form>
             </Box>
