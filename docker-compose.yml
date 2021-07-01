@@ -68,7 +68,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
     ports:
-      - '5555:5555'
+      - '9999:5555'
     build:
       context: server/prisma
       dockerfile: Dockerfile
