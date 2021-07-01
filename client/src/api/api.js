@@ -83,10 +83,10 @@ export const usePoll = (slug) => {
   };
 };
 
-export const usePollResults = (slug) => {
+export const usePollResults = (slug, autoRefresh) => {
   const { data, error } = useSWR(`/polls/${slug}/results`, fetcher, {
     revalidateOnFocus: false,
-    refreshInterval: 1000,
+    refreshInterval: autoRefresh ? 1000 : 0,
   });
 
   return {

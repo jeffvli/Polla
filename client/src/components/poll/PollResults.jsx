@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Box,
@@ -10,6 +10,9 @@ import {
   SimpleGrid,
   Tooltip,
   Button,
+  Switch,
+  Flex,
+  Spacer,
 } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
@@ -23,9 +26,22 @@ import PollSettings from "./PollSettings";
 import PollTags from "./PollTags";
 
 function PollResults({ user }) {
+  const [autoRefresh, setAutoRefresh] = useState(
+    localStorage.getItem("autoRefresh") === "false" ? false : true
+  );
   const { pollSlug } = useParams();
   const { poll, isError } = usePoll(pollSlug);
-  const { pollResults } = usePollResults(pollSlug);
+  const { pollResults } = usePollResults(pollSlug, autoRefresh);
+
+  const handleAutoRefreshToggle = () => {
+    if (autoRefresh === false) {
+      setAutoRefresh(true);
+      localStorage.setItem("autoRefresh", "true");
+    } else {
+      setAutoRefresh(false);
+      localStorage.setItem("autoRefresh", "false");
+    }
+  };
 
   return (
     <>
@@ -53,7 +69,18 @@ function PollResults({ user }) {
             }
             headerRight={<PollTags slug={pollSlug} />}
           >
-            <Stack spacing={8}>
+            <Flex>
+              <Spacer />
+              <Text textAlign="end">
+                Auto-refresh{" "}
+                <Switch
+                  id="auto-refresh"
+                  isChecked={autoRefresh}
+                  onChange={handleAutoRefreshToggle}
+                />
+              </Text>
+            </Flex>
+            <Stack spacing={8} mt={5}>
               {poll.pollQuestions.map((question) => (
                 <Box key={nanoid()}>
                   <SimpleGrid columns={2}>
@@ -120,11 +147,11 @@ function PollResults({ user }) {
                 </Box>
               ))}
             </Stack>
-            {user && user.username === poll.username && (
-              <Stack direction="row" justifyContent="flex-end" mt={5}>
+            <Stack direction="row" justifyContent="flex-end" mt={5}>
+              {user && user.username === poll.username && (
                 <PollSettings user={user} slug={pollSlug} />
-              </Stack>
-            )}
+              )}
+            </Stack>
           </PollBox>
           <PollShare mt="2rem" mb="5rem" />
         </>
