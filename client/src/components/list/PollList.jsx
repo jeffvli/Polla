@@ -26,6 +26,7 @@ import { FaSort } from "react-icons/fa";
 import { Link as RouterLink } from "react-router-dom";
 import { nanoid } from "nanoid";
 
+import "./PollList.css";
 import { useProfilePolls } from "../../api/api";
 
 const PollList = ({ username }) => {
@@ -98,7 +99,7 @@ const PollList = ({ username }) => {
         </Flex>
         {polls && (
           <>
-            <Table size="sm" variant="simple" mt={5}>
+            <Table className="poll-table" size="sm" variant="simple" mt={5}>
               <Thead>
                 <Tr>
                   <Th>
