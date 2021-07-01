@@ -1,4 +1,4 @@
 #!/bin/sh
-npx prisma migrate dev --name "migrate"
+npx prisma migrate deploy
 
 npm run dev
