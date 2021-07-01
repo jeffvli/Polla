@@ -1,4 +1,3 @@
-import { Link as RouterLink } from "react-router-dom";
 import {
   Flex,
   Spacer,
@@ -9,9 +8,10 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Link,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link as RouterLink } from "react-router-dom";
 
 import "./Navbar.css";
 import { api } from "../../api/api";
@@ -22,9 +22,9 @@ const Navbar = ({ user }) => {
   return (
     <nav>
       <Flex backgroundColor="#12161E">
-        <a href="/" className="title" id="title">
+        <Link as={RouterLink} className="title" id="title" to="/" outline={0}>
           Polla
-        </a>
+        </Link>
         <Spacer />
         {user ? (
           <Menu isLazy>
