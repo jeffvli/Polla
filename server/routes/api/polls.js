@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const _ = require("lodash");
+const bcrypt = require("bcryptjs");
 
 const prisma = require("../../utils/initPrisma");
 const checkAuthenticated = require("../../middleware/checkAuthenticated");
@@ -277,6 +278,7 @@ router.post("/:slug/responses", checkAuthenticated, async (req, res) => {
   }
 
   try {
+    const duplicateResponses = [];
     const ipAddress = req.ipInfo.ip;
     const selectedPoll = await prisma.poll.findUnique({
       where: {
@@ -294,74 +296,37 @@ router.post("/:slug/responses", checkAuthenticated, async (req, res) => {
       },
     });
 
-    if (selectedPoll?.dupCheckMode === "ipAddress") {
-      const duplicateUserOrIp = await existingPollResponses.filter(
-        (responses) => {
-          if (req.authenticated) {
-            return (
-              responses.ipAddress === ipAddress ||
-              responses.username === req.user.username
-            );
-          } else {
-            return responses.ipAddress === ipAddress;
-          }
-        }
-      );
+    // Check for username matches for existing poll responses
+    // for both ip/session based checking
+    for (const pr of existingPollResponses) {
+      if (req.authenticated && pr.username === req.user.username) {
+        duplicateResponses.push(pr);
+      }
+    }
 
-      // Prevent the same user from voting multiple times to a poll
-      // Automatically replace the existing response if another is submitted
-      if (duplicateUserOrIp.length > 0) {
-        if (req.authenticated) {
-          await prisma.pollResponse.deleteMany({
-            where: {
-              username: req.user.username,
-              pollId: Number(selectedPoll?.id),
-            },
-          });
+    if (selectedPoll?.dupCheckMode === "ipAddress") {
+      for (const pr of existingPollResponses) {
+        if (await bcrypt.compare(ipAddress, pr.ipAddress)) {
+          duplicateResponses.push(pr);
         }
-        await prisma.pollResponse.deleteMany({
-          where: {
-            ipAddress: ipAddress,
-            pollId: Number(selectedPoll?.id),
-          },
-        });
       }
     } else {
-      const duplicateUserOrSession = await existingPollResponses.filter(
-        (responses) => {
-          if (req.authenticated) {
-            return (
-              responses.sessionId ===
-                (req.body.length > 1
-                  ? req.body[0].sessionId
-                  : req.body.sessionId) ||
-              responses.username === req.user.username
-            );
-          } else {
-            return req.body.length > 1
-              ? req.body[0].sessionId
-              : req.body.sessionId;
-          }
-        }
-      );
+      const duplicateSessions = await existingPollResponses.filter((pr) => {
+        if (req.body.length > 0) return pr.sessionId === req.body[0].sessionId;
+        return pr.sessionId === req.body.sessionId;
+      });
 
-      if (duplicateUserOrSession.length > 0) {
-        if (req.authenticated) {
-          await prisma.pollResponse.deleteMany({
-            where: {
-              username: req.user.username,
-              pollId: Number(selectedPoll?.id),
-            },
-          });
-        }
-        await prisma.pollResponse.deleteMany({
-          where: {
-            sessionId:
-              req.body.length > 1 ? req.body[0].sessionId : req.body.sessionId,
-            pollId: Number(selectedPoll?.id),
-          },
-        });
-      }
+      duplicateSessions.forEach((dup) => duplicateResponses.push(dup));
+    }
+
+    // Prevent the same user from voting multiple times to a poll
+    // Automatically replace the existing response if another is submitted
+    for (const pr of _.uniqBy(duplicateResponses, "id")) {
+      await prisma.pollResponse.delete({
+        where: {
+          id: pr.id,
+        },
+      });
     }
 
     // If the request data is not an array, it will fail on the preceeding
@@ -371,9 +336,10 @@ router.post("/:slug/responses", checkAuthenticated, async (req, res) => {
       req.body = [].concat(req.body);
     }
 
+    const hashedIp = await bcrypt.hash(ipAddress, 10);
     const responseData = await req.body.map((data) => {
       return {
-        ipAddress: ipAddress,
+        ipAddress: hashedIp,
         username: req.authenticated ? req.user.username : null,
         pollId: Number(selectedPoll?.id),
         pollQuestionId: Number(data.questionId),
