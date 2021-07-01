@@ -284,6 +284,10 @@ router.post("/:slug/responses", checkAuthenticated, async (req, res) => {
       },
     });
 
+    if (!selectedPoll.isOpen) {
+      return res.status(422).json(errorMessage(422, "Poll is closed."));
+    }
+
     const existingPollResponses = await prisma.pollResponse.findMany({
       where: {
         pollId: Number(selectedPoll?.id),

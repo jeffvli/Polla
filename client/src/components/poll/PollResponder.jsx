@@ -206,7 +206,7 @@ const PollResponder = ({ user }) => {
                     width="auto"
                     isLoading={false}
                     loadingText="Creating"
-                    disabled={isSubmitting}
+                    disabled={!poll.isOpen || isSubmitting}
                   >
                     Submit Response
                   </Button>
