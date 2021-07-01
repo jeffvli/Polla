@@ -4,7 +4,6 @@ import {
   Box,
   Text,
   Stack,
-  Progress,
   CircularProgress,
   Center,
   SimpleGrid,
@@ -16,7 +15,6 @@ import {
 } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
-import { nanoid } from "nanoid";
 
 import { usePoll, usePollResults } from "../../api/api";
 import MissingPage from "../missingpage/MissingPage";
@@ -24,6 +22,7 @@ import PollBox from "./PollBox";
 import PollShare from "./PollShare";
 import PollSettings from "./PollSettings";
 import PollTags from "./PollTags";
+import ProgressBar from "../progressbar/ProgressBar";
 
 function PollResults({ user }) {
   const [autoRefresh, setAutoRefresh] = useState(
@@ -71,10 +70,11 @@ function PollResults({ user }) {
           >
             <Flex>
               <Spacer />
-              <Text textAlign="end">
+              <Text textAlign="end" fontSize={{ base: "sm", md: "sm" }}>
                 Auto-refresh{" "}
                 <Switch
                   id="auto-refresh"
+                  size="sm"
                   isChecked={autoRefresh}
                   onChange={handleAutoRefreshToggle}
                 />
@@ -82,7 +82,7 @@ function PollResults({ user }) {
             </Flex>
             <Stack spacing={8} mt={5}>
               {poll.pollQuestions.map((question) => (
-                <Box key={nanoid()}>
+                <Box key={`question-result-${question.id}`}>
                   <SimpleGrid columns={2}>
                     <Box>
                       <Text
@@ -113,7 +113,7 @@ function PollResults({ user }) {
                       </Text>
                     </Box>
                   </SimpleGrid>
-                  <Progress
+                  <ProgressBar
                     colorScheme={
                       pollResults.responses.find((response) => {
                         if (question.id === response.pollQuestionId) {

@@ -6,3 +6,8 @@
 .chakra-modal__content {
   background-color: #272c35 !important;
 }
+
+div[role="progressbar"] {
+  transition: 0.5s ease;
+  transition-delay: 0.5s;
+}
