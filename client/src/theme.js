@@ -20,6 +20,9 @@ const theme = extendTheme({
       body: {
         bg: "#272C35",
       },
+      ':focus:not(:focus-visible):not([role="dialog"]):not([role="menu"])': {
+        boxShadow: "none !important",
+      },
     },
   },
   breakpoints,
