@@ -105,12 +105,11 @@ const PollSettings = ({ user, slug }) => {
           <MenuList>
             <MenuItem
               icon={poll.isOpen ? <LockIcon /> : <UnlockIcon />}
-              onClick={async () =>
+              onClick={() =>
                 api
                   .patch(`/polls/${poll.slug}/isOpen`)
                   .then(() => {
                     mutate();
-                    //window.location.reload();
                   })
                   .catch((err) => {
                     console.error(err.message);
@@ -121,12 +120,11 @@ const PollSettings = ({ user, slug }) => {
             </MenuItem>
             <MenuItem
               icon={poll.isPrivate ? <ViewIcon /> : <ViewOffIcon />}
-              onClick={async () =>
+              onClick={() =>
                 api
                   .patch(`/polls/${poll.slug}/isPrivate`)
                   .then(() => {
                     mutate();
-                    //window.location.reload();
                   })
                   .catch((err) => {
                     console.error(err.message);
