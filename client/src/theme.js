@@ -14,15 +14,7 @@ const theme = extendTheme({
   config: {
     initialColorMode: "dark",
   },
-  components: {
-    AlertDialog: {
-      colorScheme: {
-        gray: {
-          bg: "red.400",
-        },
-      },
-    },
-  },
+  components: {},
   styles: {
     global: {
       body: {
