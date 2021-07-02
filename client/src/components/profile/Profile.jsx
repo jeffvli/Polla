@@ -57,7 +57,6 @@ const Profile = () => {
                   >
                     <Tooltip
                       hasArrow
-                      openDelay={500}
                       label={
                         <Stack spacing={0}>
                           <Text>Title: {poll.title}</Text>
@@ -129,7 +128,6 @@ const Profile = () => {
                   >
                     <Tooltip
                       hasArrow
-                      openDelay={500}
                       label={
                         <Stack spacing={0}>
                           <Text>Title: {response.poll.title}</Text>
