@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Flex,
   Button,
@@ -11,17 +11,14 @@ import {
   Tbody,
   Text,
   Badge,
-  Tag,
   Box,
   Heading,
   Spacer,
-  InputGroup,
-  InputLeftElement,
   Input,
   Link,
   Stack,
 } from "@chakra-ui/react";
-import { SearchIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { ViewOffIcon } from "@chakra-ui/icons";
 import { FaSort } from "react-icons/fa";
 import { Link as RouterLink } from "react-router-dom";
 import { nanoid } from "nanoid";
@@ -31,29 +28,28 @@ import { useProfilePolls } from "../../api/api";
 
 const PollList = ({ username }) => {
   const [pollSearch, setPollSearch] = useState("");
+  const [pollSearchConfirm, setPollSearchConfirm] = useState("");
   const [skip, setSkip] = useState(0);
-  const [take, setTake] = useState(15);
   const [sortBy, setSortBy] = useState("createdAt");
   const [order, setOrder] = useState("desc");
+  const searchInput = useRef("");
   const { polls } = useProfilePolls(
     username,
-    pollSearch,
+    pollSearchConfirm,
     skip,
-    take,
+    15,
     sortBy,
     order,
     localStorage.getItem("token")
   );
 
-  const handleSearch = (e) => {
-    if (e.key === "Enter") {
-      setPollSearch(e.target.value);
-    }
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      setPollSearchConfirm(searchInput.current.value);
+    }, 800);
 
-    if (e.key === "Backspace" && e.target.value.length <= 1) {
-      setPollSearch("");
-    }
-  };
+    return () => clearTimeout(delayDebounceFn);
+  }, [pollSearch]);
 
   const handleNext = () => {
     setSkip(skip + 15);
@@ -86,15 +82,14 @@ const PollList = ({ username }) => {
           </Box>
           <Spacer />
           <Box>
-            <InputGroup>
-              <InputLeftElement children={<SearchIcon />} />
-              <Input
-                maxWidth="20rem"
-                variant="outline"
-                placeholder="Press enter to search"
-                onKeyDown={handleSearch}
-              />
-            </InputGroup>
+            <Input
+              ref={searchInput}
+              size="sm"
+              maxWidth={{ base: "10rem", md: "20rem" }}
+              variant="outline"
+              placeholder="Search"
+              onKeyDown={(e) => setPollSearch(e.target.value)}
+            />
           </Box>
         </Flex>
         {polls && (
@@ -126,7 +121,7 @@ const PollList = ({ username }) => {
                       </Text>
                     </Link>
                   </Th>
-                  <Th textAlign="center">
+                  <Th display={{ base: "none", md: "table-cell" }}>
                     <Link
                       color={sortBy === "isOpen" ? "#AADBFF" : void 0}
                       onClick={() => {
@@ -138,7 +133,7 @@ const PollList = ({ username }) => {
                       </Text>
                     </Link>
                   </Th>
-                  <Th display={{ base: "none", md: "block" }}>
+                  <Th>
                     <Link
                       color={sortBy === "votes" ? "#AADBFF" : void 0}
                       onClick={() => {
@@ -163,7 +158,7 @@ const PollList = ({ username }) => {
                       >
                         <Text
                           isTruncated
-                          maxWidth={{ base: "10rem", md: "15rem" }}
+                          maxWidth={{ base: "5rem", md: "15rem" }}
                         >
                           {poll.title}
                           {poll.isPrivate ? (
@@ -174,17 +169,17 @@ const PollList = ({ username }) => {
                         </Text>
                       </Link>
                     </Td>
-                    <Td>{poll.createdAt}</Td>
                     <Td>
+                      <Text isTruncated maxWidth={{ base: "7em", md: "15rem" }}>
+                        {poll.createdAt}
+                      </Text>
+                    </Td>
+                    <Td display={{ base: "none", md: "table-cell" }}>
                       <Badge colorScheme={poll.isOpen ? "green" : "red"}>
                         {poll.isOpen ? "Open" : "Closed"}
                       </Badge>
                     </Td>
-                    <Td display={{ base: "none", md: "block" }}>
-                      <Tag colorScheme="blue">
-                        {poll._count.pollResponses} votes
-                      </Tag>
-                    </Td>
+                    <Td>{poll._count.pollResponses} votes</Td>
                   </Tr>
                 ))}
               </Tbody>
