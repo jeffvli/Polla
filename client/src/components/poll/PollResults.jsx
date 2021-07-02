@@ -59,7 +59,7 @@ function PollResults({ user }) {
           <PollBox
             poll={poll}
             headerLeft={
-              <Button as={RouterLink} to={`/polls/${pollSlug}/`} variant="link">
+              <Button as={RouterLink} to={`/${pollSlug}/`} variant="link">
                 <ArrowBackIcon />
               </Button>
             }

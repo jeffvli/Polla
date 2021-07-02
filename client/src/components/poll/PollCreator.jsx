@@ -137,7 +137,7 @@ const PollCreator = ({ mb }) => {
       <Box>
         <form onSubmit={handleSubmit}>
           {successResponse.status && (
-            <Redirect to={`/polls/${successResponse.slug}`} />
+            <Redirect to={`/${successResponse.slug}`} />
           )}
           <FormControl id="poll-title" isRequired>
             <FormLabel>Poll Title</FormLabel>

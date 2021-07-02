@@ -35,10 +35,10 @@ function App() {
             <Route path="/profile/:username">
               <Profile />
             </Route>
-            <Route path="/polls/:pollSlug/results">
+            <Route path="/:pollSlug/results">
               <PollResults user={user} />
             </Route>
-            <Route path="/polls/:pollSlug">
+            <Route path="/:pollSlug">
               <PollResponder user={user} />
             </Route>
             <Route exact path="/">
@@ -48,7 +48,6 @@ function App() {
               <MissingPage />
             </Route>
           </Switch>
-          <Footer />
         </>
       </Router>
     </>

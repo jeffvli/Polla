@@ -79,7 +79,7 @@ const PollResponder = ({ user }) => {
         .post(`/polls/${pollSlug}/responses`, pollResponses)
         .then(() => {
           setIsSubmitting(false);
-          history.push(`/polls/${pollSlug}/results`);
+          history.push(`/${pollSlug}/results`);
         })
         .catch(() => {
           toast({
@@ -98,7 +98,7 @@ const PollResponder = ({ user }) => {
         })
         .then(() => {
           setIsSubmitting(false);
-          history.push(`/polls/${pollSlug}/results`);
+          history.push(`/${pollSlug}/results`);
         })
         .catch(() => {
           toast({
@@ -211,7 +211,7 @@ const PollResponder = ({ user }) => {
 
                   <Button
                     as={RouterLink}
-                    to={`/polls/${pollSlug}/results`}
+                    to={`/${pollSlug}/results`}
                     size={buttonSize}
                     colorScheme="gray"
                     variant="outline"

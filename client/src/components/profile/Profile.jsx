@@ -76,7 +76,7 @@ const Profile = () => {
                         </Stack>
                       }
                     >
-                      <LinkOverlay as={RouterLink} to={`/polls/${poll.slug}`}>
+                      <LinkOverlay as={RouterLink} to={`/${poll.slug}`}>
                         <Flex>
                           {poll.isPrivate && (
                             <ViewOffIcon
@@ -154,7 +154,7 @@ const Profile = () => {
                     >
                       <LinkOverlay
                         as={RouterLink}
-                        to={`/polls/${response.poll.slug}`}
+                        to={`/${response.poll.slug}`}
                       >
                         <Flex>
                           <Text

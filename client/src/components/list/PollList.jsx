@@ -150,11 +150,7 @@ const PollList = ({ username }) => {
               {polls.data.map((poll) => (
                 <Tr key={nanoid()}>
                   <Td>
-                    <Link
-                      as={RouterLink}
-                      to={`/polls/${poll.slug}`}
-                      variant="link"
-                    >
+                    <Link as={RouterLink} to={`/${poll.slug}`} variant="link">
                       <Text
                         isTruncated
                         maxWidth={{ base: "5rem", md: "15rem" }}
