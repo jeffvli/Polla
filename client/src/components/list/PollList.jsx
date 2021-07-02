@@ -75,118 +75,116 @@ const PollList = ({ username }) => {
 
   return (
     <>
-      <Box minHeight="45rem">
-        <Flex>
-          <Box>
-            <Heading fontSize="xl">All polls</Heading>
-          </Box>
-          <Spacer />
-          <Box>
-            <Input
-              ref={searchInput}
-              size="sm"
-              maxWidth={{ base: "10rem", md: "20rem" }}
-              variant="outline"
-              placeholder="Search"
-              onKeyDown={(e) => setPollSearch(e.target.value)}
-            />
-          </Box>
-        </Flex>
-        {polls && (
-          <>
-            <Table className="poll-table" size="sm" variant="simple" mt={5}>
-              <Thead>
-                <Tr>
-                  <Th>
+      <Flex>
+        <Box>
+          <Heading fontSize="xl">All polls</Heading>
+        </Box>
+        <Spacer />
+        <Box>
+          <Input
+            ref={searchInput}
+            size="sm"
+            maxWidth={{ base: "10rem", md: "20rem" }}
+            variant="outline"
+            placeholder="Search"
+            onKeyDown={(e) => setPollSearch(e.target.value)}
+          />
+        </Box>
+      </Flex>
+      {polls && (
+        <>
+          <Table className="poll-table" size="sm" variant="simple" mt={5}>
+            <Thead>
+              <Tr>
+                <Th>
+                  <Link
+                    color={sortBy === "title" ? "#AADBFF" : void 0}
+                    onClick={() => {
+                      handleSort("title");
+                    }}
+                  >
+                    <Text display="flex" alignItems="center">
+                      Title <FaSort />
+                    </Text>
+                  </Link>
+                </Th>
+                <Th>
+                  <Link
+                    color={sortBy === "createdAt" ? "#AADBFF" : void 0}
+                    onClick={() => {
+                      handleSort("createdAt");
+                    }}
+                  >
+                    <Text display="flex" alignItems="center">
+                      Created <FaSort />
+                    </Text>
+                  </Link>
+                </Th>
+                <Th display={{ base: "none", md: "table-cell" }}>
+                  <Link
+                    color={sortBy === "isOpen" ? "#AADBFF" : void 0}
+                    onClick={() => {
+                      handleSort("isOpen");
+                    }}
+                  >
+                    <Text display="flex" alignItems="center">
+                      Status <FaSort />
+                    </Text>
+                  </Link>
+                </Th>
+                <Th>
+                  <Link
+                    color={sortBy === "votes" ? "#AADBFF" : void 0}
+                    onClick={() => {
+                      handleSort("votes");
+                    }}
+                  >
+                    <Text display="flex" alignItems="center">
+                      Votes <FaSort />
+                    </Text>
+                  </Link>
+                </Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {polls.data.map((poll) => (
+                <Tr key={nanoid()}>
+                  <Td>
                     <Link
-                      color={sortBy === "title" ? "#AADBFF" : void 0}
-                      onClick={() => {
-                        handleSort("title");
-                      }}
+                      as={RouterLink}
+                      to={`/polls/${poll.slug}`}
+                      variant="link"
                     >
-                      <Text display="flex" alignItems="center">
-                        Title <FaSort />
-                      </Text>
-                    </Link>
-                  </Th>
-                  <Th>
-                    <Link
-                      color={sortBy === "createdAt" ? "#AADBFF" : void 0}
-                      onClick={() => {
-                        handleSort("createdAt");
-                      }}
-                    >
-                      <Text display="flex" alignItems="center">
-                        Created <FaSort />
-                      </Text>
-                    </Link>
-                  </Th>
-                  <Th display={{ base: "none", md: "table-cell" }}>
-                    <Link
-                      color={sortBy === "isOpen" ? "#AADBFF" : void 0}
-                      onClick={() => {
-                        handleSort("isOpen");
-                      }}
-                    >
-                      <Text display="flex" alignItems="center">
-                        Status <FaSort />
-                      </Text>
-                    </Link>
-                  </Th>
-                  <Th>
-                    <Link
-                      color={sortBy === "votes" ? "#AADBFF" : void 0}
-                      onClick={() => {
-                        handleSort("votes");
-                      }}
-                    >
-                      <Text display="flex" alignItems="center">
-                        Votes <FaSort />
-                      </Text>
-                    </Link>
-                  </Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {polls.data.map((poll) => (
-                  <Tr key={nanoid()}>
-                    <Td>
-                      <Link
-                        as={RouterLink}
-                        to={`/polls/${poll.slug}`}
-                        variant="link"
+                      <Text
+                        isTruncated
+                        maxWidth={{ base: "5rem", md: "15rem" }}
                       >
-                        <Text
-                          isTruncated
-                          maxWidth={{ base: "5rem", md: "15rem" }}
-                        >
-                          {poll.title}
-                          {poll.isPrivate ? (
-                            <ViewOffIcon ml={2} color="red.300" />
-                          ) : (
-                            void 0
-                          )}
-                        </Text>
-                      </Link>
-                    </Td>
-                    <Td>
-                      <Text isTruncated maxWidth={{ base: "7em", md: "15rem" }}>
-                        {poll.createdAt}
+                        {poll.title}
+                        {poll.isPrivate ? (
+                          <ViewOffIcon ml={2} color="red.300" />
+                        ) : (
+                          void 0
+                        )}
                       </Text>
-                    </Td>
-                    <Td display={{ base: "none", md: "table-cell" }}>
-                      <Badge colorScheme={poll.isOpen ? "green" : "red"}>
-                        {poll.isOpen ? "Open" : "Closed"}
-                      </Badge>
-                    </Td>
-                    <Td>{poll._count.pollResponses} votes</Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </>
-        )}
-      </Box>
+                    </Link>
+                  </Td>
+                  <Td>
+                    <Text isTruncated maxWidth={{ base: "7em", md: "15rem" }}>
+                      {poll.createdAt}
+                    </Text>
+                  </Td>
+                  <Td display={{ base: "none", md: "table-cell" }}>
+                    <Badge colorScheme={poll.isOpen ? "green" : "red"}>
+                      {poll.isOpen ? "Open" : "Closed"}
+                    </Badge>
+                  </Td>
+                  <Td>{poll._count.pollResponses} votes</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </>
+      )}
       {polls && (
         <>
           <Stack>
