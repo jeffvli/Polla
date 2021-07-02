@@ -204,7 +204,11 @@ const PollResponder = ({ user }) => {
                     width="auto"
                     isLoading={false}
                     loadingText="Creating"
-                    disabled={!poll.isOpen || isSubmitting}
+                    disabled={
+                      !poll.isOpen || isSubmitting || poll.multipleAnswers
+                        ? multiplePollResponse.length === 0
+                        : !singlePollResponse
+                    }
                   >
                     Submit Response
                   </Button>
