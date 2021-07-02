@@ -38,7 +38,7 @@ const Login = () => {
       })
       .catch((err) => {
         let errMessage;
-        if (err.response.status === 401) {
+        if (err.response && err.response.status === 401) {
           errMessage = "The provided credentials are invalid.";
         } else {
           errMessage = err.message;
