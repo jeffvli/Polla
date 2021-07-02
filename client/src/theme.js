@@ -2,12 +2,12 @@ import { extendTheme } from "@chakra-ui/react";
 import { createBreakpoints } from "@chakra-ui/theme-tools";
 
 export const defaultResponsiveWidth = {
-  base: "95%",
+  base: "100%",
   md: "55em",
 };
 
 const breakpoints = createBreakpoints({
-  md: "55em",
+  md: "60em",
 });
 
 const theme = extendTheme({
@@ -18,11 +18,17 @@ const theme = extendTheme({
   config: {
     initialColorMode: "dark",
   },
-  components: {},
+  components: {
+    Button: {
+      baseStyle: {
+        borderRadius: "2px",
+      },
+    },
+  },
   styles: {
     global: {
       body: {
-        bg: "#272C35",
+        bg: "#070720",
       },
       ':focus:not(:focus-visible):not([role="dialog"]):not([role="menu"])': {
         boxShadow: "none !important",

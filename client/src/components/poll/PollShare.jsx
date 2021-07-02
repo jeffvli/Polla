@@ -20,11 +20,11 @@ const PollShare = ({ mt, mb, m }) => {
   return (
     <Box mt={mt} mb={mb} m={m}>
       <ResponsiveBox variant="bordered">
-        <Heading size="md" mb={3}>
+        <Heading fontSize={{ base: "lg", md: "xl" }} mb={3}>
           Share this poll
         </Heading>
         <InputGroup size="md">
-          <Input value={pollUrl} pr="6rem" isReadOnly />
+          <Input value={pollUrl} pr="6rem" size="md" isReadOnly />
           <InputRightElement width="6rem">
             <Button
               h="2rem"

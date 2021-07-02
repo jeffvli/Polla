@@ -292,10 +292,10 @@ const Register = () => {
             <Button
               type="submit"
               width="full"
-              bg={"blue.400"}
+              bg={"blue.500"}
               color={"white"}
               _hover={{
-                bg: "blue.500",
+                bg: "blue.600",
               }}
             >
               {isLoading ? (

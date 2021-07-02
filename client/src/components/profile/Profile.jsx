@@ -91,7 +91,7 @@ const Profile = () => {
 
                           <Text
                             isTruncated
-                            maxWidth={{ base: "15em", md: "8em" }}
+                            maxWidth={{ base: "12em", md: "8em" }}
                           >
                             {poll.title}
                           </Text>
@@ -161,7 +161,7 @@ const Profile = () => {
                         <Flex>
                           <Text
                             isTruncated
-                            maxWidth={{ base: "20em", md: "8em" }}
+                            maxWidth={{ base: "12em", md: "8em" }}
                           >
                             {response.poll.title}{" "}
                             {response.poll.isPrivate && (
@@ -181,7 +181,7 @@ const Profile = () => {
                         <Tag>
                           <Text
                             isTruncated
-                            maxWidth={{ base: "20em", md: "8em" }}
+                            maxWidth={{ base: "12em", md: "8em" }}
                           >
                             {response.pollQuestion.question}
                           </Text>

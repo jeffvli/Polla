@@ -61,9 +61,6 @@ function PollResults({ user }) {
             headerLeft={
               <Button as={RouterLink} to={`/polls/${pollSlug}/`} variant="link">
                 <ArrowBackIcon />
-                <Text display={{ base: "none", md: "block" }} fontSize="sm">
-                  Back to poll
-                </Text>
               </Button>
             }
             headerRight={<PollTags slug={pollSlug} />}

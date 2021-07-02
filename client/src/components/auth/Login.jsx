@@ -68,11 +68,10 @@ const Login = () => {
 
         <Box
           rounded={"lg"}
-          bg="#212836"
           boxShadow={"lg"}
           p={8}
           mt="5"
-          backgroundColor={"#282C34"}
+          backgroundColor={"#11112A"}
           shadow={"1px 1px 3px 3px rgba(0,0,0,0.3)"}
         >
           <form onSubmit={handleSubmit}>
@@ -107,10 +106,10 @@ const Login = () => {
                 ></Stack>
                 <Button
                   type="submit"
-                  bg={"blue.400"}
+                  bg={"blue.500"}
                   color={"white"}
                   _hover={{
-                    bg: "blue.500",
+                    bg: "blue.600",
                   }}
                   isLoading={isSubmitting}
                 >

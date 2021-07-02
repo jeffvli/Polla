@@ -122,9 +122,6 @@ const PollResponder = ({ user }) => {
             headerLeft={
               <Button as={RouterLink} to="/" variant="link">
                 <ArrowBackIcon />
-                <Text display={{ base: "none", md: "block" }} fontSize="sm">
-                  Back to poll creation
-                </Text>
               </Button>
             }
             headerRight={<PollTags slug={pollSlug} />}
@@ -162,7 +159,7 @@ const PollResponder = ({ user }) => {
                     Select response
                   </FormLabel>
                   {poll.multipleAnswers ? (
-                    <Stack spacing={3}>
+                    <Stack spacing={5}>
                       <CheckboxGroup>
                         {poll.pollQuestions.map((question) => (
                           <Checkbox
@@ -181,7 +178,7 @@ const PollResponder = ({ user }) => {
                     </Stack>
                   ) : (
                     <RadioGroup name="form-poll">
-                      <Stack spacing={3}>
+                      <Stack spacing={5}>
                         {poll.pollQuestions.map((question) => (
                           <Radio
                             value={question.question}
@@ -200,7 +197,8 @@ const PollResponder = ({ user }) => {
                 <Flex mt={5}>
                   <Button
                     size={buttonSize}
-                    colorScheme="gray"
+                    backgroundColor="blue.500"
+                    _hover={{ bg: "blue.600" }}
                     variant="solid"
                     type="submit"
                     width="auto"
