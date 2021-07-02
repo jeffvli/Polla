@@ -71,7 +71,7 @@ const Login = () => {
           boxShadow={"lg"}
           p={8}
           mt="5"
-          backgroundColor={"#11112A"}
+          backgroundColor={"#212836"}
           shadow={"1px 1px 3px 3px rgba(0,0,0,0.3)"}
         >
           <form onSubmit={handleSubmit}>

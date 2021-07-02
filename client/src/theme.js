@@ -28,7 +28,7 @@ const theme = extendTheme({
   styles: {
     global: {
       body: {
-        bg: "#070720",
+        bg: "#1C212E",
       },
       ':focus:not(:focus-visible):not([role="dialog"]):not([role="menu"])': {
         boxShadow: "none !important",

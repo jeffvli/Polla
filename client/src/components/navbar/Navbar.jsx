@@ -22,7 +22,7 @@ const Navbar = ({ user }) => {
   return (
     <Flex
       as="nav"
-      backgroundColor="#0b0b23"
+      backgroundColor="#141820"
       borderColor="#31334A"
       borderBottomWidth="1px"
     >
