@@ -23,7 +23,7 @@ const PollBox = ({ poll, children, headerLeft, headerCenter, headerRight }) => {
               <Box>{headerCenter}</Box>
               <Box>{headerRight}</Box>
             </SimpleGrid>
-            <Box pb={"2rem"} pt={"2rem"}>
+            <Box pb={"1rem"} pt={"1.5rem"}>
               <Box textAlign="center">
                 <Heading fontSize={{ base: "xl", md: "3xl" }}>
                   {poll.title}

@@ -159,7 +159,7 @@ const PollResponder = ({ user }) => {
                     Select response
                   </FormLabel>
                   {poll.multipleAnswers ? (
-                    <Stack spacing={5}>
+                    <Stack spacing={3}>
                       <CheckboxGroup>
                         {poll.pollQuestions.map((question) => (
                           <Checkbox
@@ -178,7 +178,7 @@ const PollResponder = ({ user }) => {
                     </Stack>
                   ) : (
                     <RadioGroup name="form-poll">
-                      <Stack spacing={5}>
+                      <Stack spacing={3}>
                         {poll.pollQuestions.map((question) => (
                           <Radio
                             value={question.question}
