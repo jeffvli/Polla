@@ -178,7 +178,7 @@ const PollCreator = ({ mb }) => {
                 );
               }}
             >
-              {pasteInsert === true ? "Paste" : "Enter"}
+              {pasteInsert === true ? "Enter" : "Paste"}
             </Button>
           </HStack>
           {pasteInsert === false ? (
