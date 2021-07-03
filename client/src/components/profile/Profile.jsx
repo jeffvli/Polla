@@ -19,14 +19,19 @@ import { nanoid } from "nanoid";
 import { useProfile } from "../../api/api";
 import ResponsiveBox from "../generic/responsivebox/ResponsiveBox";
 import PollList from "../list/PollList";
+import MissingPage from "../missingpage/MissingPage";
 
 const Profile = () => {
   const { username } = useParams();
-  const { profile } = useProfile(username, localStorage.getItem("token"));
+  const { profile, isError } = useProfile(
+    username,
+    localStorage.getItem("token")
+  );
 
   return (
     <>
-      {profile && (
+      {isError && <MissingPage />}
+      {!isError && profile && (
         <>
           <ResponsiveBox>
             <Stack direction="row">
@@ -190,7 +195,7 @@ const Profile = () => {
                 ))}
             </Grid>
           </ResponsiveBox>
-          <ResponsiveBox variant="bordered" mt={10} mb="5rem">
+          <ResponsiveBox variant="bordered" mt={10}>
             <PollList username={username} />
           </ResponsiveBox>
         </>
