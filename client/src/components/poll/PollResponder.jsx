@@ -19,6 +19,7 @@ import {
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { AlertIcon } from "@chakra-ui/alert";
 import { useParams, useHistory, Link as RouterLink } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 import MissingPage from "../missingpage/MissingPage";
 import PollShare from "./PollShare";
@@ -117,6 +118,9 @@ const PollResponder = ({ user }) => {
       {isError && <MissingPage />}
       {poll && (
         <>
+          <Helmet>
+            <title>{poll.title} - Polla</title>
+          </Helmet>
           <PollBox
             poll={poll}
             headerLeft={

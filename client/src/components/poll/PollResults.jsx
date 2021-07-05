@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 import { usePoll, usePollResults } from "../../api/api";
 import MissingPage from "../missingpage/MissingPage";
@@ -56,6 +57,9 @@ function PollResults({ user }) {
 
       {poll && pollResults && (
         <>
+          <Helmet>
+            <title>{poll.title} (results) - Polla</title>
+          </Helmet>
           <PollBox
             poll={poll}
             headerLeft={

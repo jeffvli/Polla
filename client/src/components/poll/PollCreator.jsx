@@ -18,6 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { CopyIcon } from "@chakra-ui/icons";
 import { Redirect } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 import "./Poll.css";
 import { api } from "../../api/api";
@@ -130,146 +131,154 @@ const PollCreator = ({ mb }) => {
   };
 
   return (
-    <ResponsiveBox variant="bordered" mb={mb}>
-      <Box textAlign="center" pb={10}>
-        <Heading>Create a new Poll</Heading>
-      </Box>
-      <Box>
-        <form onSubmit={handleSubmit}>
-          {successResponse.status && (
-            <Redirect to={`/${successResponse.slug}`} />
-          )}
-          <FormControl id="poll-title" isRequired>
-            <FormLabel>Poll Title</FormLabel>
-            <Input
-              autoFocus
-              size="lg"
-              maxLength={128}
-              placeholder="Enter a title..."
-              autoComplete="off"
-              onChange={(e) => setTitle(e.currentTarget.value)}
-            />
-          </FormControl>
+    <>
+      <Helmet>
+        <title>Create poll - Polla</title>
+      </Helmet>
+      <ResponsiveBox variant="bordered" mb={mb}>
+        <Box textAlign="center" pb={10}>
+          <Heading>Create a new Poll</Heading>
+        </Box>
+        <Box>
+          <form onSubmit={handleSubmit}>
+            {successResponse.status && (
+              <Redirect to={`/${successResponse.slug}`} />
+            )}
+            <FormControl id="poll-title" isRequired>
+              <FormLabel>Poll Title</FormLabel>
+              <Input
+                autoFocus
+                size="lg"
+                maxLength={128}
+                placeholder="Enter a title..."
+                autoComplete="off"
+                onChange={(e) => setTitle(e.currentTarget.value)}
+              />
+            </FormControl>
 
-          <FormLabel mt={5}>Description (optional)</FormLabel>
-          <Textarea
-            resize="none"
-            maxLength={256}
-            placeholder="Enter a description..."
-            autoComplete="off"
-            onChange={(e) => setDescription(e.target.value)}
-          />
-
-          <HStack mt={5}>
-            <FormLabel width="full">
-              {pasteInsert === false
-                ? "Questions"
-                : "Questions (enter one option per line)"}
-            </FormLabel>
-            <Button
-              leftIcon={<CopyIcon />}
-              variant="ghost"
-              size="xs"
-              onClick={() => {
-                setPasteInsert.toggle();
-                localStorage.setItem(
-                  "pasteInsert",
-                  pasteInsert === false ? "true" : "false"
-                );
-              }}
-            >
-              {pasteInsert === true ? "Enter" : "Paste"}
-            </Button>
-          </HStack>
-          {pasteInsert === false ? (
-            <Stack spacing={3}>
-              {pollQuestions.map((question, index) => {
-                return (
-                  <FormControl key={`poll-question-${index}`}>
-                    <Input
-                      variant="filled"
-                      size="md"
-                      autoComplete="off"
-                      value={question}
-                      onChange={(e) => handleUpdate(index, e.target.value)}
-                      onFocus={() => {
-                        index === pollQuestions.length - 1
-                          ? setPollQuestions(
-                              produce(pollQuestions, (draft) => {
-                                draft.push("");
-                              })
-                            )
-                          : void 0;
-                      }}
-                    />
-                  </FormControl>
-                );
-              })}
-            </Stack>
-          ) : (
+            <FormLabel mt={5}>Description (optional)</FormLabel>
             <Textarea
-              size="sm"
-              resize="vertical"
-              variant="filled"
-              value={
-                pollQuestions.join("\n").trim() === ""
-                  ? ""
-                  : pollQuestions.join("\n")
-              }
-              onChange={(e) => setPollQuestions(e.target.value.split("\n"))}
+              resize="none"
+              maxLength={256}
+              placeholder="Enter a description..."
+              autoComplete="off"
+              onChange={(e) => setDescription(e.target.value)}
             />
-          )}
-          <Stack direction="column" mt={5}>
-            <FormLabel>Settings</FormLabel>
-            <Checkbox
-              isChecked={multipleAnswers}
-              onChange={() => {
-                setMultipleAnswers.toggle();
-                localStorage.setItem(
-                  "multipleAnswers",
-                  multipleAnswers === false ? "true" : "false"
-                );
-              }}
-            >
-              Allow multiple answers
-            </Checkbox>
 
-            <Checkbox
-              isChecked={privatePoll}
-              onChange={() => {
-                setPrivatePoll.toggle();
-                localStorage.setItem(
-                  "privatePoll",
-                  privatePoll === false ? "true" : "false"
-                );
-              }}
-            >
-              Set private (only accessible by direct link)
-            </Checkbox>
-            <FormLabel>Duplicate vote detection</FormLabel>
-            <RadioGroup onChange={handleDuplicateCheck} value={duplicateCheck}>
-              <Stack direction="row">
-                <Radio value="ipAddress">Ip address</Radio>
-                <Radio value="session">Browser session</Radio>
+            <HStack mt={5}>
+              <FormLabel width="full">
+                {pasteInsert === false
+                  ? "Questions"
+                  : "Questions (enter one option per line)"}
+              </FormLabel>
+              <Button
+                leftIcon={<CopyIcon />}
+                variant="ghost"
+                size="xs"
+                onClick={() => {
+                  setPasteInsert.toggle();
+                  localStorage.setItem(
+                    "pasteInsert",
+                    pasteInsert === false ? "true" : "false"
+                  );
+                }}
+              >
+                {pasteInsert === true ? "Enter" : "Paste"}
+              </Button>
+            </HStack>
+            {pasteInsert === false ? (
+              <Stack spacing={3}>
+                {pollQuestions.map((question, index) => {
+                  return (
+                    <FormControl key={`poll-question-${index}`}>
+                      <Input
+                        variant="filled"
+                        size="md"
+                        autoComplete="off"
+                        value={question}
+                        onChange={(e) => handleUpdate(index, e.target.value)}
+                        onFocus={() => {
+                          index === pollQuestions.length - 1
+                            ? setPollQuestions(
+                                produce(pollQuestions, (draft) => {
+                                  draft.push("");
+                                })
+                              )
+                            : void 0;
+                        }}
+                      />
+                    </FormControl>
+                  );
+                })}
               </Stack>
-            </RadioGroup>
-          </Stack>
+            ) : (
+              <Textarea
+                size="sm"
+                resize="vertical"
+                variant="filled"
+                value={
+                  pollQuestions.join("\n").trim() === ""
+                    ? ""
+                    : pollQuestions.join("\n")
+                }
+                onChange={(e) => setPollQuestions(e.target.value.split("\n"))}
+              />
+            )}
+            <Stack direction="column" mt={5}>
+              <FormLabel>Settings</FormLabel>
+              <Checkbox
+                isChecked={multipleAnswers}
+                onChange={() => {
+                  setMultipleAnswers.toggle();
+                  localStorage.setItem(
+                    "multipleAnswers",
+                    multipleAnswers === false ? "true" : "false"
+                  );
+                }}
+              >
+                Allow multiple answers
+              </Checkbox>
 
-          <Button
-            colorScheme="gray"
-            variant="solid"
-            type="submit"
-            width="full"
-            isLoading={isSubmitting}
-            disabled={isSubmitting}
-            loadingText="Creating"
-            mt={5}
-          >
-            Create Poll
-          </Button>
-        </form>
-      </Box>
-    </ResponsiveBox>
+              <Checkbox
+                isChecked={privatePoll}
+                onChange={() => {
+                  setPrivatePoll.toggle();
+                  localStorage.setItem(
+                    "privatePoll",
+                    privatePoll === false ? "true" : "false"
+                  );
+                }}
+              >
+                Set private (only accessible by direct link)
+              </Checkbox>
+              <FormLabel>Duplicate vote detection</FormLabel>
+              <RadioGroup
+                onChange={handleDuplicateCheck}
+                value={duplicateCheck}
+              >
+                <Stack direction="row">
+                  <Radio value="ipAddress">Ip address</Radio>
+                  <Radio value="session">Browser session</Radio>
+                </Stack>
+              </RadioGroup>
+            </Stack>
+
+            <Button
+              colorScheme="gray"
+              variant="solid"
+              type="submit"
+              width="full"
+              isLoading={isSubmitting}
+              disabled={isSubmitting}
+              loadingText="Creating"
+              mt={5}
+            >
+              Create Poll
+            </Button>
+          </form>
+        </Box>
+      </ResponsiveBox>
+    </>
   );
 };
 

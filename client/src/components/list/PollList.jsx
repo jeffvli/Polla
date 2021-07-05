@@ -215,14 +215,12 @@ const PollList = ({ username }) => {
               alignItems="flex-end"
               justifyContent="flex-end"
             >
-              <Box>
-                <Text>
-                  {`${skip + 1} - ${
-                    skip + 14 > polls.count ? polls.count : skip + 15
-                  }`}{" "}
-                  of {polls.count}
-                </Text>
-              </Box>
+              <Text>
+                {`${skip + 1} - ${
+                  skip + 14 >= polls.count ? polls.count : skip + 15
+                }`}{" "}
+                of {polls.count}
+              </Text>
             </Flex>
           </Stack>
         </>
