@@ -131,7 +131,7 @@ export const useProfile = (username, token) => {
   };
 };
 
-export const useProfilePolls = (
+export const usePollList = (
   username,
   search,
   skip,
@@ -142,7 +142,9 @@ export const useProfilePolls = (
 ) => {
   const { data, error } = useSWR(
     [
-      `/polls/?username=${username}&search=${search}&take=${take}&skip=${skip}&sortBy=${sortBy}&order=${order}`,
+      username === ""
+        ? `/polls/?search=${search}&take=${take}&skip=${skip}&sortBy=${sortBy}&order=${order}`
+        : `/polls/?username=${username}&search=${search}&take=${take}&skip=${skip}&sortBy=${sortBy}&order=${order}`,
       token,
     ],
     authFetcher,

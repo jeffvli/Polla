@@ -24,7 +24,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { nanoid } from "nanoid";
 
 import "./PollList.css";
-import { useProfilePolls } from "../../api/api";
+import { usePollList } from "../../api/api";
 
 const PollList = ({ username }) => {
   const [pollSearch, setPollSearch] = useState("");
@@ -33,7 +33,7 @@ const PollList = ({ username }) => {
   const [sortBy, setSortBy] = useState("createdAt");
   const [order, setOrder] = useState("desc");
   const searchInput = useRef("");
-  const { polls } = useProfilePolls(
+  const { polls } = usePollList(
     username,
     pollSearchConfirm,
     skip,
