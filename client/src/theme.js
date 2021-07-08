@@ -3,11 +3,11 @@ import { createBreakpoints } from "@chakra-ui/theme-tools";
 
 export const defaultResponsiveWidth = {
   base: "100%",
-  md: "55em",
+  md: "80%",
 };
 
 const breakpoints = createBreakpoints({
-  md: "60em",
+  md: "55em",
 });
 
 const theme = extendTheme({

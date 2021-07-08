@@ -135,7 +135,7 @@ const PollCreator = ({ mb }) => {
       <Helmet>
         <title>Create poll - Polla</title>
       </Helmet>
-      <ResponsiveBox variant="bordered" mb={mb}>
+      <ResponsiveBox variant="bordered" mb={mb} maxWidth={"60em"}>
         <Box textAlign="center" pb={10}>
           <Heading>Create a new Poll</Heading>
         </Box>

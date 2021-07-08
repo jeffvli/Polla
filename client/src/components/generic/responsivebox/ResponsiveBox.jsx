@@ -3,10 +3,11 @@ import { Box } from "@chakra-ui/react";
 
 import { defaultResponsiveWidth } from "../../../theme";
 
-const ResponsiveBox = ({ children, variant, mt, mb, isLoading, minHeight }) => {
+const ResponsiveBox = ({ children, variant, isLoading, ...rest }) => {
   return (
     <Box
       width={defaultResponsiveWidth}
+      maxWidth={rest.maxWidth}
       backgroundColor={variant === "bordered" ? "#212836" : void 0}
       shadow={
         variant === "bordered" ? "1px 1px 3px 3px rgba(0,0,0,0.3)" : void 0
@@ -15,10 +16,10 @@ const ResponsiveBox = ({ children, variant, mt, mb, isLoading, minHeight }) => {
       p={5}
       ml="auto"
       mr="auto"
-      mb={mb}
-      mt={mt}
+      mb={rest.mb}
+      mt={rest.mt}
       pointerEvents={isLoading ? "none" : void 0}
-      minHeight={minHeight}
+      minHeight={rest.minHeight}
     >
       {children}
     </Box>
