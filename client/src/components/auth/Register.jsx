@@ -210,7 +210,7 @@ const Register = () => {
           </Text>
         </Box>
       </ResponsiveBox>
-      <ResponsiveBox variant="bordered">
+      <ResponsiveBox variant="bordered" maxWidth="60rem">
         <form onSubmit={handleSubmit}>
           <Box
             borderRadius="8px"
@@ -307,7 +307,7 @@ const Register = () => {
           </Box>
         </form>
       </ResponsiveBox>
-      <ResponsiveBox>
+      <ResponsiveBox maxWidth="60rem">
         <Box>
           <Text color={"gray.500"}>
             Already have an account?{" "}

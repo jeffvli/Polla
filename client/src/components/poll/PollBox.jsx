@@ -17,7 +17,7 @@ const PollBox = ({ poll, children, headerLeft, headerCenter, headerRight }) => {
     <>
       {poll && (
         <>
-          <ResponsiveBox variant="bordered">
+          <ResponsiveBox variant="bordered" maxWidth={"60rem"}>
             <SimpleGrid columns={3}>
               <Box>{headerLeft}</Box>
               <Box>{headerCenter}</Box>

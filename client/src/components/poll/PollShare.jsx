@@ -19,7 +19,7 @@ const PollShare = ({ mt, mb, m }) => {
 
   return (
     <Box mt={mt} mb={mb} m={m}>
-      <ResponsiveBox variant="bordered">
+      <ResponsiveBox variant="bordered" maxWidth={"60rem"}>
         <Heading fontSize={{ base: "lg", md: "xl" }} mb={3}>
           Share this poll
         </Heading>
