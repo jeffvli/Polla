@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Randomstring from "randomstring";
 
 import Navbar from "./navbar/Navbar";
-import Footer from "./footer/Footer";
 import PollCreator from "./poll/PollCreator";
 import PollResponder from "./poll/PollResponder";
 import MissingPage from "./missingpage/MissingPage";
@@ -12,6 +11,7 @@ import Register from "./auth/Register";
 import PollResults from "./poll/PollResults";
 import { useUser } from "../api/api";
 import Profile from "./profile/Profile";
+import Discover from "./discover/Discover";
 
 function App() {
   const { user } = useUser(localStorage.getItem("token"));
@@ -31,6 +31,9 @@ function App() {
             </Route>
             <Route path="/login">
               <Login />
+            </Route>
+            <Route path="/discover">
+              <Discover />
             </Route>
             <Route path="/profile/:username">
               <Profile />

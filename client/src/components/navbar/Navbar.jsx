@@ -30,6 +30,19 @@ const Navbar = ({ user }) => {
         Polla
       </Link>
       <Spacer />
+      <Button
+        as={RouterLink}
+        to="/discover"
+        size="sm"
+        m="auto"
+        mr="1rem"
+        bg={"blue.500"}
+        _hover={{
+          bg: "blue.600",
+        }}
+      >
+        Discover
+      </Button>
       {user ? (
         <Menu isLazy>
           <MenuButton
@@ -67,15 +80,6 @@ const Navbar = ({ user }) => {
             <>
               <Button
                 as={RouterLink}
-                to="/login"
-                size="sm"
-                m="auto"
-                variant="outline"
-              >
-                Log In
-              </Button>
-              <Button
-                as={RouterLink}
                 to="/register"
                 size="sm"
                 m="auto"
@@ -85,6 +89,15 @@ const Navbar = ({ user }) => {
                 }}
               >
                 Register
+              </Button>
+              <Button
+                as={RouterLink}
+                to="/login"
+                size="sm"
+                m="auto"
+                variant="outline"
+              >
+                Log In
               </Button>
             </>
           </Stack>
