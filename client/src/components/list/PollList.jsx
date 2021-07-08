@@ -25,6 +25,7 @@ import { nanoid } from "nanoid";
 
 import "./PollList.css";
 import { usePollList } from "../../api/api";
+import { formatDate } from "../../utils/formatDate";
 
 const PollList = ({ username }) => {
   const [pollSearch, setPollSearch] = useState("");
@@ -166,7 +167,7 @@ const PollList = ({ username }) => {
                   </Td>
                   <Td>
                     <Text isTruncated maxWidth={{ base: "7em", md: "15rem" }}>
-                      {poll.createdAt}
+                      {formatDate(poll.createdAt)}
                     </Text>
                   </Td>
                   <Td display={{ base: "none", md: "table-cell" }}>
