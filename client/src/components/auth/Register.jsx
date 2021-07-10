@@ -20,6 +20,7 @@ import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import { Link as RouterLink, Redirect } from "react-router-dom";
 import { nanoid } from "nanoid";
 import produce from "immer";
+import { Helmet } from "react-helmet-async";
 
 import { api } from "../../api/api";
 import ResponsiveBox from "../generic/responsivebox/ResponsiveBox";
@@ -201,6 +202,9 @@ const Register = () => {
   return (
     <>
       {registerSuccess && <Redirect to="/login" />}
+      <Helmet>
+        <title>Register | Polla</title>
+      </Helmet>
       <ResponsiveBox>
         <Box textAlign="center">
           <Heading>Account Registration</Heading>

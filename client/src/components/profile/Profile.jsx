@@ -20,7 +20,7 @@ import { useProfile } from "../../api/api";
 import ResponsiveBox from "../generic/responsivebox/ResponsiveBox";
 import PollList from "../list/PollList";
 import MissingPage from "../missingpage/MissingPage";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 const Profile = () => {
   const { username } = useParams();
@@ -35,7 +35,7 @@ const Profile = () => {
       {!isError && profile && (
         <>
           <Helmet>
-            <title>{profile.username}'s profile - Polla</title>
+            <title>{profile.username}'s Profile | Polla</title>
           </Helmet>
           <ResponsiveBox>
             <Stack direction="row">

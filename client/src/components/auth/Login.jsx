@@ -12,6 +12,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 import { api } from "../../api/api";
 
@@ -55,6 +56,9 @@ const Login = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Login | Polla</title>
+      </Helmet>
       <Box
         width={"30em"}
         m="auto"

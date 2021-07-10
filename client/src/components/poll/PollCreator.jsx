@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { CopyIcon } from "@chakra-ui/icons";
 import { Redirect } from "react-router-dom";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 import "./Poll.css";
 import { api } from "../../api/api";
@@ -133,7 +133,7 @@ const PollCreator = ({ mb }) => {
   return (
     <>
       <Helmet>
-        <title>Create poll - Polla</title>
+        <title>Create Poll | Polla</title>
       </Helmet>
       <ResponsiveBox variant="bordered" mb={mb} maxWidth={"60em"}>
         <Box textAlign="center" pb={10}>
