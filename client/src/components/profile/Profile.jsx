@@ -199,9 +199,7 @@ const Profile = () => {
                 ))}
             </Grid>
           </ResponsiveBox>
-          <ResponsiveBox variant="bordered" mt={10}>
-            <PollList username={username} />
-          </ResponsiveBox>
+          <PollList username={username} mt={10} />
         </>
       )}
     </>

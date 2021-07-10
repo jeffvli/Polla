@@ -4,11 +4,7 @@ import PollList from "../list/PollList";
 import ResponsiveBox from "../generic/responsivebox/ResponsiveBox";
 
 const Discover = () => {
-  return (
-    <ResponsiveBox variant="bordered">
-      <PollList username="" />
-    </ResponsiveBox>
-  );
+  return <PollList username="" />;
 };
 
 export default Discover;

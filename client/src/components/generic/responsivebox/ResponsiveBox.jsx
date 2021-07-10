@@ -13,7 +13,7 @@ const ResponsiveBox = ({ children, variant, isLoading, ...rest }) => {
         variant === "bordered" ? "1px 1px 3px 3px rgba(0,0,0,0.3)" : void 0
       }
       borderRadius={variant === "bordered" ? "lg" : void 0}
-      p={5}
+      p={rest.p ? rest.p : 5}
       ml="auto"
       mr="auto"
       mb={rest.mb}
