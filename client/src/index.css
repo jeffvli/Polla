@@ -1,1 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter&family=Montserrat&display=swap");
+
+.root {
+  margin-bottom: 3rem;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
