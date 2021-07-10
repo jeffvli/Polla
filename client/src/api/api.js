@@ -4,7 +4,7 @@ import createAuthRefreshInterceptor from "axios-auth-refresh";
 
 const refreshAuthLogic = async (failedRequest) => {
   await axios
-    .post(`${process.env.REACT_APP_API_URL}/auth/token`, {
+    .post(`${process.env.REACT_APP_API_BASE_URL}/api/auth/token`, {
       refreshToken: localStorage.getItem("refreshToken"),
     })
     .then((tokenRefreshResponse) => {
@@ -19,7 +19,7 @@ const refreshAuthLogic = async (failedRequest) => {
 };
 
 export const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL: `${process.env.REACT_APP_API_BASE_URL}/api`,
   headers: localStorage.getItem("token")
     ? {
         Authorization: "Bearer " + localStorage.getItem("token"),

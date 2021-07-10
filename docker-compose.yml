@@ -15,17 +15,16 @@ services:
     container_name: polla_client
     build:
       context: ./client
+      args:
+        - REACT_APP_BASE_URL=${CLIENT_BASE_URL}
+        - REACT_APP_API_BASE_URL=${API_BASE_URL}
+        - REACT_APP_GITHUB_URL=${GITHUB_URL}
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    restart: always
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true # Hot reloading create react app : https://mherman.org/blog/dockerizing-a-react-app/ ; https://create-react-app.dev/docs/troubleshooting/#npm-start-doesn-t-detect-changes
-      - REACT_APP_BASE_URL=${BASE_URL}
-      - REACT_APP_API_BASE_URL=${API_BASE_URL}
-      - REACT_APP_API_URL=${API_URL}
-      - REACT_APP_GITHUB_URL=${GITHUB_URL}
     restart: always
     stdin_open: true # Hot reloading create react app: https://github.com/facebook/create-react-app/issues/8688#issuecomment-602110747
     volumes:
@@ -41,8 +40,9 @@ services:
       - redis
     environment:
       - NODE_ENV=development
+      - PORT=${API_PORT}
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
-      - APP_BASE_URL=${APP_BASE_URL}
+      - APP_BASE_URL=${CLIENT_BASE_URL}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_SECRET_EXPIRATION=${JWT_SECRET_EXPIRATION}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
@@ -68,7 +68,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
     ports:
-      - '9999:5555'
+      - "9999:5555"
     build:
       context: server/prisma
       dockerfile: Dockerfile

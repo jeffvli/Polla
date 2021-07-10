@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --legacy-watch index.js",
+    "prod": "node index.js",
     "dev:debug": "nodemon --config nodemon.json --inspect-brk index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
