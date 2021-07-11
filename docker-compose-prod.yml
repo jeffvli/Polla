@@ -4,7 +4,7 @@ services:
     container_name: polla_db_prod
     image: postgres:13
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:5432"
     volumes:
       - /data/db # Create a volume for the DB.
     environment:
@@ -22,7 +22,7 @@ services:
         - REACT_APP_GITHUB_URL=${GITHUB_URL}
       dockerfile: Dockerfile.prod
     ports:
-      - "3000:3000"
+      - "${CLIENT_PORT}:3000"
     restart: always
   server:
     container_name: polla_server_prod
@@ -44,7 +44,7 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=${REDIS_PORT}
     ports:
-      - "8081:8081"
+      - "${API_PORT}:8081"
     restart: always
   redis:
     container_name: polla_redis_prod
