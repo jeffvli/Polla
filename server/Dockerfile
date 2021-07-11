@@ -13,11 +13,12 @@ RUN chmod +x /wait-for-it.sh
 WORKDIR /app
 
 # Copy dependency definitions
-COPY package*.json ./
+COPY package.json ./
+COPY yarn.lock ./
 COPY prisma ./
 
 # Install dependecies
-RUN npm install
+RUN yarn install
 
 # Get all the code needed to run the app
 COPY . ./

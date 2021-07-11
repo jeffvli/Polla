@@ -5,4 +5,4 @@ apk add --no-cache bash
 
 npx prisma migrate deploy
 
-npm run prod
+yarn prod
