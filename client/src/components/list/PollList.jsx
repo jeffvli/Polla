@@ -219,7 +219,7 @@ const PollList = ({ username, ...rest }) => {
                 justifyContent="flex-end"
               >
                 <Text>
-                  {`${skip + 1} - ${
+                  {`${polls.count === 0 ? 0 : skip + 1} - ${
                     skip + 14 >= polls.count ? polls.count : skip + 15
                   }`}{" "}
                   of {polls.count}
