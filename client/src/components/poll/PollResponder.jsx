@@ -205,9 +205,9 @@ const PollResponder = ({ user }) => {
                     _hover={{ bg: "blue.600" }}
                     variant="solid"
                     type="submit"
-                    width="auto"
-                    isLoading={false}
-                    loadingText="Creating"
+                    width="13rem"
+                    isLoading={isSubmitting}
+                    loadingText="Submitting"
                     disabled={
                       !poll.isOpen ||
                       isSubmitting ||
