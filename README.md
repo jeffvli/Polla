@@ -24,12 +24,12 @@ Polla is an online polling aiming to be a simple self-hosted alternative to stra
 
 ## Demo
 
-<a href="https://raw.githubusercontent.com/jeffvli/Polla/main/media/create_poll.png"><img src="https://raw.githubusercontent.com/jeffvli/Polla/main/media/create_poll.png" width="33%"/></a>
-<a href="https://raw.githubusercontent.com/jeffvli/Polla/main/media/poll_responder.png"><img src="https://raw.githubusercontent.com/jeffvli/Polla/main/media/poll_responder.png" width="33%" /></a>
-<a href="https://raw.githubusercontent.com/jeffvli/Polla/main/media/poll_results.png"><img src="https://raw.githubusercontent.com/jeffvli/Polla/main/media/poll_results.png" width="33%" /></a>
-<a href="https://raw.githubusercontent.com/jeffvli/Polla/main/media/poll_responder_voted.png"><img src="https://raw.githubusercontent.com/jeffvli/Polla/main/media/poll_responder_voted.png" width="33%" /></a>
-<a href="https://raw.githubusercontent.com/jeffvli/Polla/main/media/discover.png"><img src="https://raw.githubusercontent.com/jeffvli/Polla/main/media/discover.png" width="33%" /></a>
-<a href="https://raw.githubusercontent.com/jeffvli/Polla/main/media/profile.png"><img src="https://raw.githubusercontent.com/jeffvli/Polla/main/media/profile_compressed.png" width="33%" /></a>
+<a href="https://raw.githubusercontent.com/jeffvli/Polla/main/media/create_poll.png"><img src="https://raw.githubusercontent.com/jeffvli/Polla/main/media/create_poll.png" width="30%"/></a>
+<a href="https://raw.githubusercontent.com/jeffvli/Polla/main/media/poll_responder.png"><img src="https://raw.githubusercontent.com/jeffvli/Polla/main/media/poll_responder.png" width="30%" /></a>
+<a href="https://raw.githubusercontent.com/jeffvli/Polla/main/media/poll_results.png"><img src="https://raw.githubusercontent.com/jeffvli/Polla/main/media/poll_results.png" width="30%" /></a>
+<a href="https://raw.githubusercontent.com/jeffvli/Polla/main/media/poll_responder_voted.png"><img src="https://raw.githubusercontent.com/jeffvli/Polla/main/media/poll_responder_voted.png" width="30%" /></a>
+<a href="https://raw.githubusercontent.com/jeffvli/Polla/main/media/discover.png"><img src="https://raw.githubusercontent.com/jeffvli/Polla/main/media/discover.png" width="30%" /></a>
+<a href="https://raw.githubusercontent.com/jeffvli/Polla/main/media/profile.png"><img src="https://raw.githubusercontent.com/jeffvli/Polla/main/media/profile_compressed.png" width="30%" /></a>
 ## Run Locally
 
 You will need to set up Redis and PostgreSQL. For ease of deployment, I recommend using Docker to deploy.
